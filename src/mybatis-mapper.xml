@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StudentMapper">
+	<select id="getList" resultType="test.Student" >
+		SELECT * FROM R_STUDENT
+	</select>
+
+	<insert id="insert" parameterType="test.Student">
+		INSERT INTO R_STUDENT(NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) 
+		VALUES (#{name},#{sex},#{birthday},#{birthTime},#{enrollmentTime},#{major},#{photo},#{remark},#{readonly})
+	</insert>
+
+	<delete id="delete">
+		DELETE FROM R_STUDENT
+	</delete>
+	
+<!-- 		<select id="findById" parameterType="int" resultType="User">
+		select * from t_user where id=#{id}
+	</select> -->
+</mapper>
