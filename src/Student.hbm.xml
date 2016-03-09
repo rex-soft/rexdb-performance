@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="test">
+
+	<class name="Student" table="r_student">
+		<id name="studentId" column="student_Id"></id>
+		<property name="name" type="string" column="name" />
+		<property name="sex" type="int" column="sex" />
+		<property name="birthday" type="date" column="birthday" />
+		<property name="birthTime" type="timestamp" column="birth_Time" />
+		<property name="enrollmentTime" type="date" column="enrollment_Time" />
+		<property name="major" type="int" column="major" />
+		<property name="photo" type="byte[]" column="photo" />
+		<property name="remark" type="string" column="remark" />
+		<property name="readonly" type="int" column="readonly" />
+	</class>
+	
+</hibernate-mapping>

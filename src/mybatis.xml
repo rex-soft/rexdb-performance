@@ -2,13 +2,13 @@
 <configuration>
 
 	<typeAliases>
-		<typeAlias type="mybatis.DBCPDataSourceFactory" alias="RHEA_DBCP" />
+		<typeAlias type="mybatis.DBCPDataSourceFactory" alias="DBCP" />
 	</typeAliases>
 
 	<environments default="development">
 		<environment id="development">
 			<transactionManager type="JDBC" />
-			<dataSource type="RHEA_DBCP">
+			<dataSource type="DBCP">
 				<property name="driverclassname" value="com.mysql.jdbc.Driver" />
 				<property name="url" value="jdbc:mysql://localhost:3306/rexdb" />
 				<property name="username" value="root" />

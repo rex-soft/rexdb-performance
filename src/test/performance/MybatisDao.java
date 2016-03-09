@@ -14,26 +14,44 @@ public class MybatisDao extends Dao{
 	
 	static final String MYBATIS_CONFIG = "mybatis.xml";
 	
+	static SqlSessionFactory sessionFactory = null;
+	
 	static SqlSession getSession() throws IOException{
-		SqlSessionFactory sessionFactory = null;
-		sessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResourceAsReader(MYBATIS_CONFIG));
+		if(sessionFactory == null){
+			sessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResourceAsReader(MYBATIS_CONFIG));
+		}
 		return sessionFactory.openSession(true);
 	}
 
 	@Override
 	public int insert() throws Exception {
 		Student student = newStudent();
-		return getSession().insert("insert", student);
+		SqlSession session = getSession();
+		try{
+			return session.insert("insert", student);
+		}finally{
+			session.close();
+		}
 	}
 	
 	@Override
 	public List getList() throws Exception{
-		return getSession().selectList("getList");
+		SqlSession session = getSession();
+		try{
+			return session.selectList("getList");
+		}finally{
+			session.close();
+		}
 	}
 	
 	@Override
 	public int delete() throws Exception {
-		return getSession().delete("delete");
+		SqlSession session = getSession();
+		try{
+			return getSession().delete("delete");
+		}finally{
+			session.close();
+		}
 	}
 
 	//--------------MAIN TEST

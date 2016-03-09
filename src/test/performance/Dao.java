@@ -21,6 +21,11 @@ public abstract class Dao {
 	 * delete all rows
 	 */
 	public abstract int delete() throws Exception;
+	
+	/**
+	 * insert rows batch
+	 */
+	public abstract int[] batchInsert() throws Exception;
 
 	
 	/**
