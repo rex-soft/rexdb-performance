@@ -25,7 +25,7 @@ public abstract class Dao {
 	/**
 	 * insert rows batch
 	 */
-	public abstract int[] batchInsert() throws Exception;
+	public abstract int[] batchInsert(int i) throws Exception;
 
 	
 	/**

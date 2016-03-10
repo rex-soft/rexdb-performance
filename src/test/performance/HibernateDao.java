@@ -32,13 +32,19 @@ public class HibernateDao extends Dao{
 	}
 	
 	@Override
-	public int[] batchInsert() throws Exception {
+	public int[] batchInsert(int rows) throws Exception {
+		int[] c = new int[rows];
 		Session session = getSession();
 		try {
 			session.beginTransaction();
-			Serializable key = session.sa;
+			for (int i=0; i<rows; i++ ) {
+				Serializable key = session.save(super.newStudent());
+				c[i] = key == null ? 0 : 1;
+			}
+			session.flush();  
+            session.clear();
 			session.getTransaction().commit();
-			return key == null ? 0 : 1;
+			return c;
 		} finally {
 			session.close();
 		}

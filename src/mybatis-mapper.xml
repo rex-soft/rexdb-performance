@@ -13,11 +13,18 @@
 		VALUES (#{name},#{sex},#{birthday},#{birthTime},#{enrollmentTime},#{major},#{photo},#{remark},#{readonly})
 	</insert>
 
+	<insert id="batch" parameterType="java.util.List">
+		INSERT INTO R_STUDENT(NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.name},#{item.sex},#{item.birthday},#{item.birthTime},#{item.enrollmentTime},#{item.major},#{item.photo},#{item.remark},#{item.readonly})
+		</foreach>
+	</insert> 
+
 	<delete id="delete">
 		DELETE FROM R_STUDENT
 	</delete>
 	
-<!-- 		<select id="findById" parameterType="int" resultType="User">
+<!--<select id="findById" parameterType="int" resultType="User">
 		select * from t_user where id=#{id}
 	</select> -->
 </mapper>

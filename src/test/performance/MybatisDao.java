@@ -1,6 +1,7 @@
 package test.performance;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.io.Resources;
@@ -29,6 +30,19 @@ public class MybatisDao extends Dao{
 		SqlSession session = getSession();
 		try{
 			return session.insert("insert", student);
+		}finally{
+			session.close();
+		}
+	}
+	
+	@Override
+	public int[] batchInsert(int rows) throws Exception {
+		List list = new ArrayList();
+		list.add(super.newStudent());
+		
+		SqlSession session = getSession();
+		try{
+			return new int[]{session.insert("batch", list)};
 		}finally{
 			session.close();
 		}
