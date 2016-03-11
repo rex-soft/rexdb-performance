@@ -1,5 +1,8 @@
 package test;
 
+import org.rex.DB;
+import org.rex.db.exception.DBException;
+
 import test.performance.Dao;
 import test.performance.HibernateDao;
 import test.performance.JdbcDao;
@@ -23,9 +26,47 @@ public class RunTest {
 		jdbcDao = new JdbcDao();
 	}
 	
+	private int dropTable() throws DBException{
+		String sql = "drop TABLE IF EXISTS r_student";
+		return DB.update(sql);
+	}
+	
+	private int createTable() throws DBException{
+		String sql = "CREATE TABLE IF NOT EXISTS r_student ("+
+		 " student_id int(11) NOT NULL,"+
+		  "name varchar(30) NOT NULL,"+
+		  "sex tinyint(1) NOT NULL,"+
+		  "birthday date NOT NULL,"+
+		  "birth_time time NOT NULL,"+
+		  "enrollment_time datetime NOT NULL,"+
+		  "major smallint(6) NOT NULL,"+
+		  "photo blob,"+
+		  "remark text,"+
+		  "readonly tinyint(1) NOT NULL"+
+		")";
+		
+		String sqlA1 = "ALTER TABLE r_student ADD PRIMARY KEY (student_id)";
+		String sqlA2 = "ALTER TABLE r_student MODIFY student_id int(11) NOT NULL AUTO_INCREMENT";
+		
+		try{
+		return DB.update(sql);
+		}finally{
+			DB.update(sqlA1);
+			DB.update(sqlA2);
+		}
+	}
+	
 	//warm up frameworks, to avoid affecting test results
 	void warmUp() throws Exception{
 		System.out.println("preparing.");
+		
+		if(dropTable() == 1)
+			System.out.println("table r_student dropped.");
+		
+		
+		if(createTable() == 1)
+			System.out.println("table r_student created.");
+		
 		
 		hibernateDao.insert();
 		hibernateDao.getList();
@@ -98,17 +139,17 @@ public class RunTest {
 	public static void main(String[] args) throws Exception {
 		
 		RunTest test = new RunTest();
-//		test.warmUp();
-		
-//		//insert
-//		test.opers(OPER_INSERT, 50, 50);
-//
-//		System.out.println("clear and inserting 10000 rows.");
-//		test.deleteRows();
-//		test.initRows(1000);
-//		System.out.println("1000 rows inited.");
+		test.warmUp();
+//		
+		//insert
+		test.opers(OPER_INSERT, 100, 50);
+
+		System.out.println("clear and inserting 1000 rows.");
+		test.deleteRows();
+		test.initRows(10000);
+		System.out.println("1000 rows inited.");
 		
 		//get list
-		test.opers(OPER_QUERY_LIST, 10, 50);
+		test.opers(OPER_QUERY_LIST, 100, 1);
 	}
 }

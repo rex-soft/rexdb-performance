@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
-import db.Student;
+import test.Student;
 
 public class JdbcDao extends Dao{
 	
