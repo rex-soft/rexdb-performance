@@ -13,7 +13,9 @@ public class RunTest {
 	
 	public static final int OPER_INSERT = 0;
 	public static final int OPER_QUERY_LIST = 1;
-
+	public static final int OPER_QUERY_MAPLIST = 2;
+	public static final int OPER_BATCH = 2;
+	
 	Dao hibernateDao;
 	Dao mybatisDao;
 	Dao rexdbDao;
@@ -60,29 +62,33 @@ public class RunTest {
 	void warmUp() throws Exception{
 		System.out.println("preparing.");
 		
-		if(dropTable() == 1)
-			System.out.println("table r_student dropped.");
-		
-		
-		if(createTable() == 1)
-			System.out.println("table r_student created.");
+//		if(dropTable() == 1)
+//			System.out.println("table r_student dropped.");
+//		
+//		
+//		if(createTable() == 1)
+//			System.out.println("table r_student created.");
 		
 		
 		hibernateDao.insert();
 		hibernateDao.getList();
-//		hibernateDao.delete();
+		hibernateDao.getMapList();
+		hibernateDao.delete();
 		
 		mybatisDao.insert();
 		mybatisDao.getList();
-//		mybatisDao.delete();
+		mybatisDao.getMapList();
+		mybatisDao.delete();
 		
 		rexdbDao.insert();
 		rexdbDao.getList();
-//		rexdbDao.delete();
+		rexdbDao.getMapList();
+		rexdbDao.delete();
 		
 		jdbcDao.insert();
 		jdbcDao.getList();
-//		jdbcDao.delete();
+		jdbcDao.getMapList();
+		jdbcDao.delete();
 	}
 	
 	//remove all rows
@@ -97,13 +103,21 @@ public class RunTest {
 	
 	private long oper(int operation, Dao dao, int rows) throws Exception{
 		long start = System.currentTimeMillis();
-		for (int i = 0; i < rows; i++) {
-			if(OPER_INSERT == operation){
-				dao.insert();
-			}else if(OPER_QUERY_LIST == operation){
-				dao.getList();
+		
+		if(OPER_BATCH == operation){
+			dao.batchInsert(rows);
+		}else{
+			for (int i = 0; i < rows; i++) {
+				if(OPER_INSERT == operation){
+					dao.insert();
+				}else if(OPER_QUERY_LIST == operation){
+					dao.getList();
+				}else if(OPER_QUERY_MAPLIST == operation){
+					dao.getMapList();
+				}
 			}
 		}
+		
 		return System.currentTimeMillis() - start;
 	}
 	
@@ -139,17 +153,28 @@ public class RunTest {
 	public static void main(String[] args) throws Exception {
 		
 		RunTest test = new RunTest();
-		test.warmUp();
+//		test.warmUp();
+//		test.warmUp();
 //		
-		//insert
-		test.opers(OPER_INSERT, 100, 50);
-
-		System.out.println("clear and inserting 1000 rows.");
-		test.deleteRows();
-		test.initRows(10000);
-		System.out.println("1000 rows inited.");
+//		//insert
+//		test.opers(OPER_INSERT, 100, 1000);
+//
+//		System.out.println("clear and inserting 10000 rows.");
+//		
+//		test.initRows(100);
+//		System.out.println("10000 rows inited.");
+//		
+//		//get list
+//		test.opers(OPER_QUERY_LIST, 3, 1);
+//		test.opers(OPER_QUERY_LIST, 100, 1);
 		
-		//get list
-		test.opers(OPER_QUERY_LIST, 100, 1);
+//		//getMapList
+//		test.opers(OPER_QUERY_MAPLIST, 3, 1);
+//		test.opers(OPER_QUERY_MAPLIST, 100, 1);
+		
+		//test batch
+		test.opers(OPER_BATCH, 3, 100);
+		test.opers(OPER_BATCH, 100, 1000);
+		
 	}
 }

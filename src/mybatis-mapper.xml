@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="StudentMapper">
-	<select id="getList" resultType="test.Student" >
+
+    <resultMap type="test.Student" id="r_student">  
+        <id property="studentId" column="student_id"/>  
+        <result property="birthTime" column="birth_time"/>  
+        <result property="enrollmentTime" column="enrollment_time"/>  
+    </resultMap>  
+    
+    
+	<select id="getList" resultType="test.Student" resultMap="r_student">
+		SELECT * FROM r_student
+	</select>
+	
+	<select id="getMapList" resultType="java.util.HashMap" resultMap="r_student">
 		SELECT * FROM r_student
 	</select>
 
 	<insert id="insert" parameterType="test.Student">
-		INSERT INTO r_student(NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) 
-		VALUES (#{name},#{sex},#{birthday},#{birthTime},#{enrollmentTime},#{major},#{photo},#{remark},#{readonly})
+		INSERT INTO r_student(NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (#{name},#{sex},#{birthday},#{birthTime},#{enrollmentTime},#{major},#{photo},#{remark},#{readonly})
 	</insert>
 
 	<insert id="batch" parameterType="java.util.List">

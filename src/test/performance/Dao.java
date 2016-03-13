@@ -18,6 +18,11 @@ public abstract class Dao {
 	public abstract List getList() throws Exception;
 	
 	/**
+	 * select all rows
+	 */
+	public abstract List getMapList() throws Exception;
+	
+	/**
 	 * delete all rows
 	 */
 	public abstract int delete() throws Exception;

@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
@@ -40,7 +42,6 @@ public class JdbcDao extends Dao{
 			ps.setObject(7, null);
 			ps.setObject(8, null);
 			ps.setObject(9, 1);
-			
 			return ps.executeUpdate();
 		}finally{
 			ps.close();
@@ -51,14 +52,14 @@ public class JdbcDao extends Dao{
 	@Override
 	public List getList() throws Exception {
 		String sql = "SELECT * FROM R_STUDENT";
-		
 		List<Student> list = new ArrayList<Student>();
 		Connection conn = null;
 		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try{
 			conn = bds.getConnection();
 			ps = conn.prepareStatement(sql);
-			ResultSet rs = ps.executeQuery();
+			rs = ps.executeQuery();
 			while(rs.next()){
 				Student student = new Student();
 				student.setStudentId(rs.getInt("STUDENT_ID"));
@@ -74,10 +75,44 @@ public class JdbcDao extends Dao{
 				list.add(student);
 			}
 		}finally{
+			rs.close();
 			ps.close();
 			conn.close();
 		}
-		
+		return list;
+	}
+	
+
+	@Override
+	public List getMapList() throws Exception {
+		String sql = "SELECT * FROM R_STUDENT";
+		List<Map> list = new ArrayList<Map>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try{
+			conn = bds.getConnection();
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				Map student = new HashMap();
+				student.put("studentId", rs.getInt("STUDENT_ID"));
+				student.put("name", rs.getString("NAME"));
+				student.put("sex", rs.getInt("SEX"));
+				student.put("birthday", rs.getDate("BIRTHDAY"));
+				student.put("birthTime", rs.getTime("BIRTH_TIME"));
+				student.put("enrollmentTime", rs.getTimestamp("ENROLLMENT_TIME"));
+				student.put("major", rs.getInt("MAJOR"));
+				student.put("photo", rs.getBytes("PHOTO"));
+				student.put("remark", rs.getString("REMARK"));
+				student.put("readonly", rs.getInt("READONLY"));
+				list.add(student);
+			}
+		}finally{
+			rs.close();
+			ps.close();
+			conn.close();
+		}
 		return list;
 	}
 
@@ -119,5 +154,6 @@ public class JdbcDao extends Dao{
 			conn.close();
 		}
 	}
+
 
 }

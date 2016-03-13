@@ -26,10 +26,9 @@ public class MybatisDao extends Dao{
 
 	@Override
 	public int insert() throws Exception {
-		Student student = newStudent();
 		SqlSession session = getSession();
 		try{
-			return session.insert("insert", student);
+			return session.insert("insert", newStudent());
 		}finally{
 			session.close();
 		}
@@ -38,11 +37,14 @@ public class MybatisDao extends Dao{
 	@Override
 	public int[] batchInsert(int rows) throws Exception {
 		List list = new ArrayList();
-		list.add(super.newStudent());
+		for (int i = 0; i < rows; i++) {
+			list.add(super.newStudent());
+		}
 		
 		SqlSession session = getSession();
 		try{
-			return new int[]{session.insert("batch", list)};
+			int c = session.insert("batch", list);
+			return new int[]{c};
 		}finally{
 			session.close();
 		}
@@ -53,6 +55,17 @@ public class MybatisDao extends Dao{
 		SqlSession session = getSession();
 		try{
 			return session.selectList("getList");
+		}finally{
+			session.close();
+		}
+	}
+	
+	@Override
+	public List getMapList() throws Exception {
+		SqlSession session = getSession();
+		try{
+			List list = session.selectList("getMapList");
+			return list;
 		}finally{
 			session.close();
 		}
@@ -75,5 +88,6 @@ public class MybatisDao extends Dao{
 		System.out.println(dao.getList());
 		System.out.println(dao.delete());
 	}
+
 
 }

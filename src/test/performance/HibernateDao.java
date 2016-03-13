@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 public class HibernateDao extends Dao{
@@ -36,14 +37,14 @@ public class HibernateDao extends Dao{
 		int[] c = new int[rows];
 		Session session = getSession();
 		try {
-			session.beginTransaction();
+			Transaction tx = session.beginTransaction();
 			for (int i=0; i<rows; i++ ) {
 				Serializable key = session.save(super.newStudent());
 				c[i] = key == null ? 0 : 1;
 			}
 			session.flush();  
             session.clear();
-			session.getTransaction().commit();
+            tx.commit();
 			return c;
 		} finally {
 			session.close();
@@ -56,6 +57,20 @@ public class HibernateDao extends Dao{
 		try {
 			Query query = session.createQuery("from Student");
 			return query.list();
+		} finally {
+			session.close();
+		}
+	}
+	
+	@Override
+	public List getMapList() throws Exception {
+		Session session = getSession();
+		try {
+			Query query = session.createQuery("select new map(s.studentId as studentId, s.name as name, s.sex as sex,"
+					+ "s.birthday as birthday, s.birthTime as birthTime, s.enrollmentTime as enrollmentTime,"
+					+ "s.major as major, s.photo as photo, s.remark as remark,s.readonly as readonly) from Student s");
+			List list = query.list();
+			return list;
 		} finally {
 			session.close();
 		}
@@ -78,5 +93,6 @@ public class HibernateDao extends Dao{
 		System.out.println(dao.getList());
 		System.out.println(dao.delete());
 	}
+
 
 }
