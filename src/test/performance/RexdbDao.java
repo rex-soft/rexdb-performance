@@ -24,13 +24,14 @@ public class RexdbDao extends Dao {
 		for (int i = 0; i < rows; i++) {
 			students[i] = super.newStudent();
 		}
-
 		return DB.batchUpdate(sql, students);
 	}
 
 	@Override
 	public List getList() throws Exception {
-		return DB.getList("SELECT * FROM R_STUDENT", Student.class);
+		List list= DB.getList("SELECT * FROM R_STUDENT", Student.class);
+		System.out.println("======="+list.size());
+		return list;
 	}
 
 	@Override

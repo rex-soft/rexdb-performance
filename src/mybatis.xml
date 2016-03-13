@@ -14,7 +14,7 @@
 			<transactionManager type="JDBC" />
 			<dataSource type="DBCP">
 				<property name="driverclassname" value="com.mysql.jdbc.Driver" />
-				<property name="url" value="jdbc:mysql://localhost:3306/rexdb" />
+				<property name="url" value="jdbc:mysql://localhost:3306/rexdb?rewriteBatchedStatements=true" />
 				<property name="username" value="root" />
 				<property name="password" value="12345678" />
 			</dataSource>

@@ -21,7 +21,7 @@ public class JdbcDao extends Dao{
 	public JdbcDao(){
 		bds = new BasicDataSource();
 		bds.setDriverClassName("org.apache.commons.dbcp.BasicDataSource");
-		bds.setUrl("jdbc:mysql://localhost:3306/rexdb");
+		bds.setUrl("jdbc:mysql://localhost:3306/rexdb?rewriteBatchedStatements=true");
 		bds.setUsername("root");
 		bds.setPassword("12345678");
 	}
@@ -135,8 +135,8 @@ public class JdbcDao extends Dao{
 		Connection conn = bds.getConnection();
 		PreparedStatement ps = null;
 		try {
+			ps = conn.prepareStatement(sql);
 			for (int j = 0; j < rows; j++) {
-				ps = conn.prepareStatement(sql);
 				ps.setString(1, "jim");
 				ps.setObject(2, 1);
 				ps.setObject(3, new Timestamp(System.currentTimeMillis()));

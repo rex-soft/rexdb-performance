@@ -155,9 +155,9 @@ public class RunTest {
 		RunTest test = new RunTest();
 //		test.warmUp();
 //		test.warmUp();
-//		
-//		//insert
-//		test.opers(OPER_INSERT, 100, 1000);
+		
+		//insert
+//		test.opers(OPER_INSERT, 100, 500);
 //
 //		System.out.println("clear and inserting 10000 rows.");
 //		
@@ -165,16 +165,16 @@ public class RunTest {
 //		System.out.println("10000 rows inited.");
 //		
 //		//get list
-//		test.opers(OPER_QUERY_LIST, 3, 1);
-//		test.opers(OPER_QUERY_LIST, 100, 1);
-		
+		test.opers(OPER_QUERY_LIST, 3, 1);
+		test.opers(OPER_QUERY_LIST, 100, 1);
+//		
 //		//getMapList
 //		test.opers(OPER_QUERY_MAPLIST, 3, 1);
 //		test.opers(OPER_QUERY_MAPLIST, 100, 1);
-		
-		//test batch
-		test.opers(OPER_BATCH, 3, 100);
-		test.opers(OPER_BATCH, 100, 1000);
-		
+//		
+//		//test batch
+//		test.opers(OPER_BATCH, 2, 100);
+//		test.opers(OPER_BATCH, 100, 10000);
+
 	}
 }
