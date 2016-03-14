@@ -1,14 +1,16 @@
 package test.performance;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
@@ -19,11 +21,31 @@ public class JdbcDao extends Dao{
 	BasicDataSource bds = null;
 	
 	public JdbcDao(){
+		Properties prop = loadProperties("/conn.properties");
+		
 		bds = new BasicDataSource();
-		bds.setDriverClassName("org.apache.commons.dbcp.BasicDataSource");
-		bds.setUrl("jdbc:mysql://localhost:3306/rexdb?rewriteBatchedStatements=true");
-		bds.setUsername("root");
-		bds.setPassword("12345678");
+		bds.setDriverClassName(prop.getProperty("driverClassName"));
+		bds.setUrl(prop.getProperty("url"));
+		bds.setUsername(prop.getProperty("username"));
+		bds.setPassword(prop.getProperty("password"));
+	}
+
+	Properties loadProperties(String resources) {
+		InputStream inputstream = this.getClass().getResourceAsStream(resources);
+		if(inputstream == null)
+			throw new RuntimeException("could not find properties "+resources);
+		Properties properties = new Properties();
+		try {
+			properties.load(inputstream);
+			return properties;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				inputstream.close();
+			} catch (IOException e) {
+			}
+		}
 	}
 
 	@Override
@@ -33,16 +55,19 @@ public class JdbcDao extends Dao{
 		PreparedStatement ps = null;
 		try {
 			ps = conn.prepareStatement(sql);
-			ps.setLong(1, Dao.studentId++);
-			ps.setString(2, "jim");
-			ps.setObject(3, 1);
-			ps.setObject(4, new Timestamp(System.currentTimeMillis()));
-			ps.setObject(5, new Timestamp(System.currentTimeMillis()));
-			ps.setObject(6, new Timestamp(System.currentTimeMillis()));
-			ps.setObject(7, 10);
-			ps.setObject(8, null);
-			ps.setObject(9, null);
-			ps.setObject(10, 1);
+			
+			Student stu  = super.newStudent();
+			ps.setLong(1, stu.getStudentId());
+			ps.setString(2, stu.getName());
+			ps.setObject(3, stu.getSex());
+			ps.setObject(4, stu.getBirthday());
+			ps.setObject(5, stu.getBirthTime());
+			ps.setObject(6, stu.getEnrollmentTime());
+			ps.setObject(7, stu.getMajor());
+			ps.setObject(8, stu.getPhoto());
+			ps.setObject(9, stu.getRemark());
+			ps.setObject(10, stu.getReadonly());
+			
 			return ps.executeUpdate();
 		}finally{
 			ps.close();
@@ -138,16 +163,19 @@ public class JdbcDao extends Dao{
 		try {
 			ps = conn.prepareStatement(sql);
 			for (int j = 0; j < rows; j++) {
-				ps.setLong(1, Dao.studentId++);
-				ps.setString(2, "jim");
-				ps.setObject(3, 1);
-				ps.setObject(4, new Timestamp(System.currentTimeMillis()));
-				ps.setObject(5, new Timestamp(System.currentTimeMillis()));
-				ps.setObject(6, new Timestamp(System.currentTimeMillis()));
-				ps.setObject(7, 10);
-				ps.setObject(8, null);
-				ps.setObject(9, null);
-				ps.setObject(10, 1);
+				
+				Student stu  = super.newStudent();
+				ps.setLong(1, stu.getStudentId());
+				ps.setString(2, stu.getName());
+				ps.setObject(3, stu.getSex());
+				ps.setObject(4, stu.getBirthday());
+				ps.setObject(5, stu.getBirthTime());
+				ps.setObject(6, stu.getEnrollmentTime());
+				ps.setObject(7, stu.getMajor());
+				ps.setObject(8, stu.getPhoto());
+				ps.setObject(9, stu.getRemark());
+				ps.setObject(10, stu.getReadonly());
+				
 				ps.addBatch();
 			}
 			return ps.executeBatch();

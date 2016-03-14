@@ -10,6 +10,8 @@ import java.util.Map;
 import org.rex.DB;
 import org.rex.db.dialect.Dialect;
 
+import com.alibaba.fastjson.JSON;
+
 import test.performance.Dao;
 import test.performance.HibernateDao;
 import test.performance.JdbcDao;
@@ -181,10 +183,10 @@ public class RunTest {
 		for (int i = 0; i < loop; i++) {
 			long h = 0, m = 0, r = 0, j = 0;
 			
-			h = oper(operation, hibernateDao, rows);
-			m = oper(operation, mybatisDao, rows);
-			j = oper(operation, jdbcDao, rows);
-			r = oper(operation, rexdbDao, rows);
+			if(hibernateEnabled) h = oper(operation, hibernateDao, rows);
+			if(mybatisEnabled) m = oper(operation, mybatisDao, rows);
+			if(jdbcEnabled) j = oper(operation, jdbcDao, rows);
+			if(rexdbEnabled) r = oper(operation, rexdbDao, rows);
 			
 			sumH += h;
 			sumM += m;
@@ -203,40 +205,71 @@ public class RunTest {
 	public static void main(String[] args) throws Exception {
 		RunTest test = new RunTest();
 		
-		System.out.println("================== running all test ==================");
+		boolean fast = false;
+		for (int i = 0; i < args.length; i++) {
+			if("fast".equals(args[i]))
+				fast = true;
+		}
 		
 		Map<String, long[]> results = new LinkedHashMap<String, long[]>();
 		
-		//test insert
-		results.put("insert-100", test.opers("insert-100", OPER_INSERT, 100, 1));	//100
-		results.put("insert-200", test.opers("insert-200", OPER_INSERT, 100, 2));	//200
-		results.put("insert-500", test.opers("insert-500", OPER_INSERT, 100, 5));	//500
-		test.deleteRows();
+		//--------fast test
+		if(fast){
+
+			System.out.println("================== running fast test ==================");
+			
+			//test insert
+			results.put("insert-50", test.opers("insert-50", OPER_INSERT, 25, 50));
+			test.deleteRows();
+			
+			//test batch insert
+			results.put("batchInsert-10k", test.opers("batchInsert-10k", OPER_BATCH, 25, 10000));
+			test.deleteRows();
+			
+			//test get list
+			test.initRows(10000);
+			results.put("getList-10k", test.opers("getList-10k", OPER_QUERY_LIST, 25, 1));
+			test.deleteRows();
+
+		//-------fully test
+		}else{
+			
+			System.out.println("================== running fully test ==================");
+			
+			//test insert
+			results.put("insert-100", test.opers("insert-100", OPER_INSERT, 100, 1));	//100
+			results.put("insert-200", test.opers("insert-200", OPER_INSERT, 100, 2));	//200
+			results.put("insert-500", test.opers("insert-500", OPER_INSERT, 100, 5));	//500
+			test.deleteRows();
+			
+			//test batch insert
+			results.put("batchInsert-10k", test.opers("batchInsert-10k", OPER_BATCH, 100, 100));	//10000
+			results.put("batchInsert-50k", test.opers("batchInsert-50k", OPER_BATCH, 100, 500));	//10000
+			results.put("batchInsert-100k", test.opers("batchInsert-100k", OPER_BATCH, 100, 1000));	//10000
+			test.deleteRows();
+			
+			//test get list
+			test.initRows(100);
+			results.put("getList-10k", test.opers("getList-10k", OPER_QUERY_LIST, 100, 1));	//10000
+			results.put("getMapList-10k", test.opers("getMapList-10k", OPER_QUERY_MAPLIST, 100, 1));	//10000
 		
-		//test batch insert
-		results.put("batchInsert-10k", test.opers("batchInsert-10k", OPER_BATCH, 100, 100));	//10000
-		results.put("batchInsert-50k", test.opers("batchInsert-50k", OPER_BATCH, 100, 500));	//10000
-		results.put("batchInsert-100k", test.opers("batchInsert-100k", OPER_BATCH, 100, 1000));	//10000
-		test.deleteRows();
+			test.deleteRows();
+			test.initRows(500);
+			results.put("getList-50k", test.opers("getList-50k", OPER_QUERY_LIST, 100, 1));	//10000
+			results.put("getMapList-50k", test.opers("getMapList-50k", OPER_QUERY_MAPLIST, 100, 1));	//10000
+			
+			test.deleteRows();
+			test.initRows(1000);
+			results.put("getList-100k", test.opers("getList-100k", OPER_QUERY_LIST, 100, 1));	//10000
+			results.put("getMapList-100k", test.opers("getMapList-100k", OPER_QUERY_MAPLIST, 100, 1));	//10000
+			test.deleteRows();
+			
+		}
 		
-		//test get list
-		test.initRows(100);
-		results.put("getList-10k", test.opers("getList-10k", OPER_QUERY_LIST, 100, 1));	//10000
-		results.put("getMapList-10k", test.opers("getMapList-10k", OPER_QUERY_MAPLIST, 100, 1));	//10000
-	
-		test.deleteRows();
-		test.initRows(500);
-		results.put("getList-50k", test.opers("getList-50k", OPER_QUERY_LIST, 100, 1));	//10000
-		results.put("getMapList-50k", test.opers("getMapList-50k", OPER_QUERY_MAPLIST, 100, 1));	//10000
-		
-		test.deleteRows();
-		test.initRows(1000);
-		results.put("getList-100k", test.opers("getList-100k", OPER_QUERY_LIST, 100, 1));	//10000
-		results.put("getMapList-100k", test.opers("getMapList-100k", OPER_QUERY_MAPLIST, 100, 1));	//10000
-		test.deleteRows();
 		
 		//------print results
 		printResult(results);
+		printJson(results);
 	}
 	
 	//print result
@@ -252,5 +285,26 @@ public class RunTest {
 			
 			System.out.println("|   " + key + "   |     " + values[0] + "     |     " + values[1] + "     |   " + values[2] + "   |   " + values[3] + "   |");
 		}
+	}
+	
+	//print json
+	public static void printJson(Map<String, long[]> result){
+		System.out.println("================== printing json result ==================");
+		
+		Map datas = new LinkedHashMap();
+		for (Iterator<Map.Entry<String, long[]>> iterator = result.entrySet().iterator(); iterator.hasNext();) {
+			Map.Entry<String, long[]> entry = iterator.next();
+			String key = entry.getKey();
+			long[] values = entry.getValue();
+			Map costs = new LinkedHashMap();
+			costs.put("hibernate", values[0]);
+			costs.put("mybatis", values[1]);
+			costs.put("jdbc", values[2]);
+			costs.put("rexdb", values[3]);
+			
+			datas.put(key, costs);
+		}
+		
+		System.out.println(JSON.toJSONString(datas));
 	}
 }

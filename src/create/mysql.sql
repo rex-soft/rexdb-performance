@@ -2,7 +2,7 @@ drop TABLE IF EXISTS r_student;
 
 --create table
 CREATE TABLE IF NOT EXISTS r_student (
-	student_id int(11) NOT NULL,
+	student_id int(11) AUTO_INCREMENT NOT NULL,
 	name varchar(30) NOT NULL,
 	sex tinyint(1) NOT NULL,
 	birthday date NOT NULL,

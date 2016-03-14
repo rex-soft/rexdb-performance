@@ -34,6 +34,7 @@ public abstract class Dao {
 
 	
 	public static volatile long studentId = 0;
+	
 	/**
 	 * new student
 	 */
