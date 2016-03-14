@@ -7,8 +7,8 @@ import java.util.Date;
  * 学生信息
  */
 public class Student {
-	
-	private int studentId;
+
+	private long studentId;
 	private String name;
 	private int sex;
 	private Date birthday;
@@ -22,7 +22,7 @@ public class Student {
 	public Student(){
 	}
 
-	public Student(int studentId, String name, int sex, Date birthday, Date birthTime, Date enrollmentTime, int major, byte[] photo, String remark,
+	public Student(long studentId, String name, int sex, Date birthday, Date birthTime, Date enrollmentTime, int major, byte[] photo, String remark,
 			int readonly) {
 		this.studentId = studentId;
 		this.name = name;
@@ -36,11 +36,11 @@ public class Student {
 		this.readonly = readonly;
 	}
 
-	public int getStudentId() {
+	public long getStudentId() {
 		return studentId;
 	}
 
-	public void setStudentId(int studentId) {
+	public void setStudentId(long studentId) {
 		this.studentId = studentId;
 	}
 

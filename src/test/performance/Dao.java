@@ -33,11 +33,13 @@ public abstract class Dao {
 	public abstract int[] batchInsert(int i) throws Exception;
 
 	
+	public static volatile long studentId = 0;
 	/**
 	 * new student
 	 */
 	protected static Student newStudent(){
 		Student student = new Student();
+		student.setStudentId(studentId++);
 		student.setName("Jim");
 		student.setSex(1);
 		student.setBirthday(new Date());

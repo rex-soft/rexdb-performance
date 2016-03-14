@@ -28,20 +28,21 @@ public class JdbcDao extends Dao{
 
 	@Override
 	public int insert() throws Exception {
-		String sql = "INSERT INTO R_STUDENT(NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO R_STUDENT(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
 		Connection conn = bds.getConnection();
 		PreparedStatement ps = null;
 		try {
 			ps = conn.prepareStatement(sql);
-			ps.setString(1, "jim");
-			ps.setObject(2, 1);
-			ps.setObject(3, new Timestamp(System.currentTimeMillis()));
+			ps.setLong(1, Dao.studentId++);
+			ps.setString(2, "jim");
+			ps.setObject(3, 1);
 			ps.setObject(4, new Timestamp(System.currentTimeMillis()));
 			ps.setObject(5, new Timestamp(System.currentTimeMillis()));
-			ps.setObject(6, 10);
-			ps.setObject(7, null);
+			ps.setObject(6, new Timestamp(System.currentTimeMillis()));
+			ps.setObject(7, 10);
 			ps.setObject(8, null);
-			ps.setObject(9, 1);
+			ps.setObject(9, null);
+			ps.setObject(10, 1);
 			return ps.executeUpdate();
 		}finally{
 			ps.close();
@@ -131,21 +132,22 @@ public class JdbcDao extends Dao{
 
 	@Override
 	public int[] batchInsert(int rows) throws Exception {
-		String sql = "INSERT INTO R_STUDENT(NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO R_STUDENT(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
 		Connection conn = bds.getConnection();
 		PreparedStatement ps = null;
 		try {
 			ps = conn.prepareStatement(sql);
 			for (int j = 0; j < rows; j++) {
-				ps.setString(1, "jim");
-				ps.setObject(2, 1);
-				ps.setObject(3, new Timestamp(System.currentTimeMillis()));
+				ps.setLong(1, Dao.studentId++);
+				ps.setString(2, "jim");
+				ps.setObject(3, 1);
 				ps.setObject(4, new Timestamp(System.currentTimeMillis()));
 				ps.setObject(5, new Timestamp(System.currentTimeMillis()));
-				ps.setObject(6, 10);
-				ps.setObject(7, null);
+				ps.setObject(6, new Timestamp(System.currentTimeMillis()));
+				ps.setObject(7, 10);
 				ps.setObject(8, null);
-				ps.setObject(9, 1);
+				ps.setObject(9, null);
+				ps.setObject(10, 1);
 				ps.addBatch();
 			}
 			return ps.executeBatch();

@@ -10,7 +10,6 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 public class HibernateDao extends Dao{
-	
 	static SessionFactory cf = null;
 	
 	static Session getSession(){
