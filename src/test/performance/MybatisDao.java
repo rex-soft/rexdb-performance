@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-
-import test.Student;
 
 public class MybatisDao extends Dao{
 	
@@ -18,12 +17,21 @@ public class MybatisDao extends Dao{
 	static SqlSessionFactory sessionFactory = null;
 	
 	static SqlSession getSession() throws IOException{
+		return getSession(false);
+	}
+
+	static SqlSession getSession(boolean isBatch) throws IOException{
 		if(sessionFactory == null){
 			sessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResourceAsReader(MYBATIS_CONFIG));
 		}
-		return sessionFactory.openSession(true);
+		
+		if(isBatch)
+			return sessionFactory.openSession(ExecutorType.BATCH, true);
+		else
+			return sessionFactory.openSession(true);
 	}
 
+	
 	@Override
 	public int insert() throws Exception {
 		SqlSession session = getSession();
@@ -36,18 +44,17 @@ public class MybatisDao extends Dao{
 	
 	@Override
 	public int[] batchInsert(int rows) throws Exception {
-		List list = new ArrayList();
-		for (int i = 0; i < rows; i++) {
-			list.add(super.newStudent());
-		}
-		
-		SqlSession session = getSession();
+		int c = 0;
+		SqlSession session = getSession(true);
 		try{
-			int c = session.insert("batch", list);
-			return new int[]{c};
+			for (int i = 0; i < rows; i++) {
+				session.insert("insert", newStudent());
+			}
+			session.flushStatements();
 		}finally{
 			session.close();
 		}
+		return new int[]{c};
 	}
 	
 	@Override

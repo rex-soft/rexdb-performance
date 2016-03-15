@@ -8,7 +8,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.rex.DB;
+import org.rex.db.configuration.Configuration;
 import org.rex.db.dialect.Dialect;
+import org.rex.db.exception.DBException;
 
 import com.alibaba.fastjson.JSON;
 
@@ -86,7 +88,10 @@ public class RunTest {
 		System.out.println("================== testing frameworks ==================");
 		
 		try{
+			hibernateDao.delete();
+			
 			hibernateDao.insert();
+			hibernateDao.batchInsert(10);
 			hibernateDao.getList();
 			hibernateDao.getMapList();
 			hibernateDao.delete();
@@ -99,6 +104,7 @@ public class RunTest {
 		
 		try{
 			mybatisDao.insert();
+			mybatisDao.batchInsert(10);
 			mybatisDao.getList();
 			mybatisDao.getMapList();
 			mybatisDao.delete();
@@ -111,6 +117,7 @@ public class RunTest {
 		
 		try{
 			rexdbDao.insert();
+			rexdbDao.batchInsert(10);
 			rexdbDao.getList();
 			rexdbDao.getMapList();
 			rexdbDao.delete();
@@ -123,6 +130,7 @@ public class RunTest {
 		
 		try{
 			jdbcDao.insert();
+			jdbcDao.batchInsert(10);
 			jdbcDao.getList();
 			jdbcDao.getMapList();
 			jdbcDao.delete();
@@ -200,6 +208,11 @@ public class RunTest {
 		return new long[]{sumH/loop, sumM/loop, sumJ/loop, sumR/loop};
 	}
 	
+	//set rexdb dynamicClass setting
+	public void  setRexdbDynamicClass(boolean dynamicClass) throws DBException{
+		Configuration.getCurrentConfiguration().setDynamicClass(dynamicClass);
+	}
+	
 	
 	//----------START TESTING
 	public static void main(String[] args) throws Exception {
@@ -215,55 +228,67 @@ public class RunTest {
 		
 		//--------fast test
 		if(fast){
-
+			int fastLoop = 25;
 			System.out.println("================== running fast test ==================");
 			
 			//test insert
-			results.put("insert-50", test.opers("insert-50", OPER_INSERT, 25, 50));
+			results.put("insert-50", test.opers("insert-50", OPER_INSERT, fastLoop, 50));
 			test.deleteRows();
 			
 			//test batch insert
-			results.put("batchInsert-10k", test.opers("batchInsert-10k", OPER_BATCH, 25, 10000));
+			results.put("batchInsert-10k", test.opers("batchInsert-10k", OPER_BATCH, fastLoop, 10000));
 			test.deleteRows();
 			
 			//test get list
 			test.initRows(10000);
-			results.put("getList-10k", test.opers("getList-10k", OPER_QUERY_LIST, 25, 1));
+			results.put("getList-10k", test.opers("getList-10k", OPER_QUERY_LIST, fastLoop, 1));
 			test.deleteRows();
 
 		//-------fully test
 		}else{
-			
+			int loop = 3;
 			System.out.println("================== running fully test ==================");
 			
 			//test insert
-			results.put("insert-100", test.opers("insert-100", OPER_INSERT, 100, 1));	//100
-			results.put("insert-200", test.opers("insert-200", OPER_INSERT, 100, 2));	//200
-			results.put("insert-500", test.opers("insert-500", OPER_INSERT, 100, 5));	//500
+			results.put("insert-100", test.opers("insert-100", OPER_INSERT, loop, 100));
+			results.put("insert-200", test.opers("insert-200", OPER_INSERT, loop, 200));
+			results.put("insert-500", test.opers("insert-500", OPER_INSERT, loop, 500));
 			test.deleteRows();
 			
-			//test batch insert
-			results.put("batchInsert-10k", test.opers("batchInsert-10k", OPER_BATCH, 100, 100));	//10000
-			results.put("batchInsert-50k", test.opers("batchInsert-50k", OPER_BATCH, 100, 500));	//10000
-			results.put("batchInsert-100k", test.opers("batchInsert-100k", OPER_BATCH, 100, 1000));	//10000
+//			//test batch insert
+			results.put("batchInsert-10k", test.opers("batchInsert-10k", OPER_BATCH, loop, 10000));
+			results.put("batchInsert-50k", test.opers("batchInsert-50k", OPER_BATCH, loop, 50000));
+			results.put("batchInsert-100k", test.opers("batchInsert-100k", OPER_BATCH, loop, 100000));
 			test.deleteRows();
 			
 			//test get list
-			test.initRows(100);
-			results.put("getList-10k", test.opers("getList-10k", OPER_QUERY_LIST, 100, 1));	//10000
-			results.put("getMapList-10k", test.opers("getMapList-10k", OPER_QUERY_MAPLIST, 100, 1));	//10000
+			test.initRows(10000);
+			results.put("getList-10k", test.opers("getList-10k", OPER_QUERY_LIST, loop, 1));
+			results.put("getMapList-10k", test.opers("getMapList-10k", OPER_QUERY_MAPLIST, loop, 1));
+			
+			test.setRexdbDynamicClass(false);
+			results.put("getList-disableDynamic-10k", test.opers("getList-10k", OPER_QUERY_LIST, loop, 1));
+			test.setRexdbDynamicClass(true);
 		
 			test.deleteRows();
-			test.initRows(500);
-			results.put("getList-50k", test.opers("getList-50k", OPER_QUERY_LIST, 100, 1));	//10000
-			results.put("getMapList-50k", test.opers("getMapList-50k", OPER_QUERY_MAPLIST, 100, 1));	//10000
+			test.initRows(50000);
+			results.put("getList-50k", test.opers("getList-50k", OPER_QUERY_LIST, loop, 1));	
+			results.put("getMapList-50k", test.opers("getMapList-50k", OPER_QUERY_MAPLIST, loop, 1));
+			
+			test.setRexdbDynamicClass(false);
+			results.put("getList-disableDynamic-50k", test.opers("getList-50k", OPER_QUERY_LIST, loop, 1));
+			test.setRexdbDynamicClass(true);
 			
 			test.deleteRows();
-			test.initRows(1000);
-			results.put("getList-100k", test.opers("getList-100k", OPER_QUERY_LIST, 100, 1));	//10000
-			results.put("getMapList-100k", test.opers("getMapList-100k", OPER_QUERY_MAPLIST, 100, 1));	//10000
-			test.deleteRows();
+			test.initRows(100000);
+			results.put("getList-100k", test.opers("getList-100k", OPER_QUERY_LIST, loop, 1));
+			results.put("getMapList-100k", test.opers("getMapList-100k", OPER_QUERY_MAPLIST, loop, 1));
 			
+			test.setRexdbDynamicClass(false);
+			results.put("getList-disableDynamic-100k", test.opers("getList-100k", OPER_QUERY_LIST, loop, 1));
+			test.setRexdbDynamicClass(true);
+			
+			test.deleteRows();
 		}
 		
 		

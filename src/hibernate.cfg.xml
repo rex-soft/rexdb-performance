@@ -15,6 +15,7 @@
 		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
 		<property name="current_session_context_class">thread</property>
 		<property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
+		<property name="hibernate.jdbc.batch_size">1000</property>
 		
 		<mapping resource="Student.hbm.xml" />
 	</session-factory>

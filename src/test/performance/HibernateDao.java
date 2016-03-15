@@ -41,7 +41,7 @@ public class HibernateDao extends Dao{
 				Serializable key = session.save(super.newStudent());
 				c[i] = key == null ? 0 : 1;
 			}
-			session.flush();  
+			session.flush(); 
             session.clear();
             tx.commit();
 			return c;

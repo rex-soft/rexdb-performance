@@ -33,7 +33,7 @@ public abstract class Dao {
 	public abstract int[] batchInsert(int i) throws Exception;
 
 	
-	public static volatile long studentId = 0;
+	public static volatile long studentId = 100;
 	
 	/**
 	 * new student

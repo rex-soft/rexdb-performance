@@ -23,12 +23,12 @@
 		VALUES (#{studentId},#{name},#{sex},#{birthday},#{birthTime},#{enrollmentTime},#{major},#{photo},#{remark},#{readonly})
 	</insert>
 
-	<insert id="batch" parameterType="java.util.List">
+<!-- 	<insert id="batch" parameterType="java.util.List">
 		INSERT INTO r_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly) VALUES
 		<foreach collection="list" item="item" index="index" separator=",">
 			(#{item.studentId},#{item.name},#{item.sex},#{item.birthday},#{item.birthTime},#{item.enrollmentTime},#{item.major},#{item.photo},#{item.remark},#{item.readonly})
 		</foreach>
-	</insert> 
+	</insert>  -->
 
 	<delete id="delete">
 		DELETE FROM r_student
