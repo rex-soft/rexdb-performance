@@ -2,6 +2,19 @@
 <!DOCTYPE configuration PUBLIC "-//rex-soft.org//REXDB DTD 1.0//EN" "http://www.rex-soft.org/dtd/rexdb-1-config.dtd">
 <configuration>
 	<properties path="conn.properties"></properties>
+	<settings>
+		<property name="lang" value="en"/>
+		<property name="nolog" value="false" />
+		<property name="validateSql" value="false" />
+ 		<property name="checkWarnings" value="false" />
+		<property name="queryTimeout" value="-1" />
+		<property name="transactionTimeout" value="-1" />
+		<property name="transactionIsolation" value="" />
+		<property name="autoRollback" value="false" />
+		<property name="reflectCache" value="true" />
+		<property name="dynamicClass" value="false" />
+		<property name="dateAdjust" value="true" />
+	</settings>
 	<dataSource class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName" value="${driverClassName}" />
 		<property name="url" value="${url}" />

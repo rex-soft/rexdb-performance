@@ -26,7 +26,7 @@ public class RunTest {
 	public static final int OPER_INSERT = 0;
 	public static final int OPER_QUERY_LIST = 1;
 	public static final int OPER_QUERY_MAPLIST = 2;
-	public static final int OPER_BATCH = 2;
+	public static final int OPER_BATCH = 3;
 	
 	//--daos
 	Dao hibernateDao;
@@ -91,7 +91,7 @@ public class RunTest {
 			hibernateDao.delete();
 			
 			hibernateDao.insert();
-			hibernateDao.batchInsert(10);
+			hibernateDao.batchInsert(1);
 			hibernateDao.getList();
 			hibernateDao.getMapList();
 			hibernateDao.delete();
@@ -104,7 +104,7 @@ public class RunTest {
 		
 		try{
 			mybatisDao.insert();
-			mybatisDao.batchInsert(10);
+			mybatisDao.batchInsert(1);
 			mybatisDao.getList();
 			mybatisDao.getMapList();
 			mybatisDao.delete();
@@ -117,7 +117,7 @@ public class RunTest {
 		
 		try{
 			rexdbDao.insert();
-			rexdbDao.batchInsert(10);
+			rexdbDao.batchInsert(1);
 			rexdbDao.getList();
 			rexdbDao.getMapList();
 			rexdbDao.delete();
@@ -125,12 +125,13 @@ public class RunTest {
 			rexdbEnabled = true;
 		}catch(Exception e){
 			System.out.println("-- rexdb error: " + e.getMessage());
+			e.printStackTrace();
 			rexdbEnabled = false;
 		}
 		
 		try{
 			jdbcDao.insert();
-			jdbcDao.batchInsert(10);
+			jdbcDao.batchInsert(1);
 			jdbcDao.getList();
 			jdbcDao.getMapList();
 			jdbcDao.delete();
@@ -227,12 +228,13 @@ public class RunTest {
 		Map<String, long[]> results = new LinkedHashMap<String, long[]>();
 		
 		//--------fast test
+		test.deleteRows();
 		if(fast){
-			int fastLoop = 25;
+			int fastLoop = 30;
 			System.out.println("================== running fast test ==================");
 			
 			//test insert
-			results.put("insert-50", test.opers("insert-50", OPER_INSERT, fastLoop, 50));
+//			results.put("insert-50", test.opers("insert-50", OPER_INSERT, fastLoop, 50));
 			test.deleteRows();
 			
 			//test batch insert
@@ -246,7 +248,7 @@ public class RunTest {
 
 		//-------fully test
 		}else{
-			int loop = 3;
+			int loop = 1;
 			System.out.println("================== running fully test ==================");
 			
 			//test insert
