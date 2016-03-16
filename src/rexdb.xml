@@ -12,7 +12,7 @@
 		<property name="transactionIsolation" value="" />
 		<property name="autoRollback" value="false" />
 		<property name="reflectCache" value="true" />
-		<property name="dynamicClass" value="false" />
+		<property name="dynamicClass" value="true" />
 		<property name="dateAdjust" value="true" />
 	</settings>
 	<dataSource class="org.apache.commons.dbcp.BasicDataSource">

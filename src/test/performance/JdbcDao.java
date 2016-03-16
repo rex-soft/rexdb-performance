@@ -165,6 +165,7 @@ public class JdbcDao extends Dao{
 			for (int j = 0; j < rows; j++) {
 				
 				Student stu  = super.newStudent();
+				
 				ps.setLong(1, stu.getStudentId());
 				ps.setString(2, stu.getName());
 				ps.setObject(3, stu.getSex());

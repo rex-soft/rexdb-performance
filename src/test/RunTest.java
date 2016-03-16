@@ -184,7 +184,7 @@ public class RunTest {
 	
 	//test insert performance
 	public double[] opers(String testName, int operation, int loop, int rows) throws Exception{
-		System.out.println("-------------------------- testing "+testName+" ------------------------");
+		System.out.println("----------------- testing "+testName+" (Rows per second) ----------------");
 		System.out.println("|      |     rexdb     |     jdbc     |    hibernate    |  mybatis   |");
 		System.out.println("| ---- | ------------- | ------------ | --------------- | ---------- |");
 		
@@ -249,12 +249,12 @@ public class RunTest {
 		
 		//--------fast test
 		test.deleteRows();
-		int loop = fast ? 10 : 3;
+		int loop = fast ? 10 : 30;
 			
 		System.out.println("===================== running test ======================");
 		
 		//test insert
-		results.put("insert", test.opers("insert", OPER_INSERT, loop, 200));
+		results.put("insert", test.opers("insert", OPER_INSERT, loop, 500));
 		test.deleteRows();
 		
 		//test batch insert
