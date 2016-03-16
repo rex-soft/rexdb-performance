@@ -3,8 +3,12 @@ package test;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.rex.DB;
@@ -21,6 +25,8 @@ import test.performance.MybatisDao;
 import test.performance.RexdbDao;
 
 public class RunTest {
+	
+	static DecimalFormat df =new DecimalFormat("#.00");  
 	
 	//--operation
 	public static final int OPER_INSERT = 0;
@@ -79,7 +85,7 @@ public class RunTest {
 			DB.commit();
 		}catch(Exception e){
 			DB.rollback();
-			throw e;
+			System.out.println("--- error: "+e.getMessage());
 		}
 	}
 	
@@ -150,15 +156,11 @@ public class RunTest {
 	
 	//remove all rows
 	public void deleteRows() throws Exception{
-		System.out.println("================== deleting all rows ==================");
-		
 		rexdbDao.delete();
 	}
 	
 	//insert rows for test
 	public void initRows(int rows) throws Exception{
-		System.out.println("================== batch insert " + rows + " rows ==================");
-		
 		rexdbDao.batchInsert(rows);
 	}
 	
@@ -167,15 +169,13 @@ public class RunTest {
 		
 		if(OPER_BATCH == operation){
 			dao.batchInsert(rows);
-		}else{
+		}else if(OPER_QUERY_LIST == operation){
+			dao.getList();
+		}else if(OPER_QUERY_MAPLIST == operation){
+			dao.getMapList();
+		}else if(OPER_INSERT == operation){
 			for (int i = 0; i < rows; i++) {
-				if(OPER_INSERT == operation){
-					dao.insert();
-				}else if(OPER_QUERY_LIST == operation){
-					dao.getList();
-				}else if(OPER_QUERY_MAPLIST == operation){
-					dao.getMapList();
-				}
+				dao.insert();
 			}
 		}
 		
@@ -183,30 +183,50 @@ public class RunTest {
 	}
 	
 	//test insert performance
-	public long[] opers(String testName, int operation, int loop, int rows) throws Exception{
-		System.out.println("--------------- testing "+testName+" ---------------");
-		System.out.println("|      |   hibernate   |   mybatis   |    jdbc    |   rexdb  |");
-		System.out.println("| ---- | ------------- | ----------- | ---------- | -------- |");
+	public double[] opers(String testName, int operation, int loop, int rows) throws Exception{
+		System.out.println("-------------------------- testing "+testName+" ------------------------");
+		System.out.println("|      |     rexdb     |     jdbc     |    hibernate    |  mybatis   |");
+		System.out.println("| ---- | ------------- | ------------ | --------------- | ---------- |");
 		
-		long sumH = 0, sumM = 0, sumR = 0, sumJ = 0;
+		List<Double> timeRs = new ArrayList<Double>(),
+					timeJs = new ArrayList<Double>(),
+					timeHs = new ArrayList<Double>(),
+					timeMs = new ArrayList<Double>();
+		
 		for (int i = 0; i < loop; i++) {
-			long h = 0, m = 0, r = 0, j = 0;
+			double h = 0, m = 0, r = 0, j = 0;
+			double timeH, timeM, timeJ, timeR;
 			
+			if(rexdbEnabled) r = oper(operation, rexdbDao, rows);
+			if(jdbcEnabled) j = oper(operation, jdbcDao, rows);
 			if(hibernateEnabled) h = oper(operation, hibernateDao, rows);
 			if(mybatisEnabled) m = oper(operation, mybatisDao, rows);
-			if(jdbcEnabled) j = oper(operation, jdbcDao, rows);
-			if(rexdbEnabled) r = oper(operation, rexdbDao, rows);
 			
-			sumH += h;
-			sumM += m;
-			sumJ += j;
-			sumR += r;
+			timeR = rows/(r/1000);
+			timeJ = rows/(j/1000);
+			timeH = rows/(h/1000);
+			timeM = rows/(m/1000);
 			
-			System.out.println("|   " + (i + 1) + "   |     " +h + "     |     " + m + "     |   " + j + "   |   " + r + "   |");
+			timeRs.add(timeR);
+			timeJs.add(timeJ);
+			timeHs.add(timeH);
+			timeMs.add(timeM);
+			
+			System.out.println("|   " + (i + 1) + "  |     " + df.format(timeR) + "     |    " + df.format(timeJ) + "     |      " + df.format(timeH) + "      |   " + df.format(timeM) + "    |");
 		}
 		
-		System.out.println("|  AVG   |     " + sumH/loop + "     |     " + sumM/loop + "     |   " + sumJ/loop + "   |   " + sumR/loop + "   |");
-		return new long[]{sumH/loop, sumM/loop, sumJ/loop, sumR/loop};
+		System.out.println("| AVG  |     " + avg(timeRs, loop) + "     |    " + avg(timeJs, loop) + "     |      " + avg(timeHs, loop) + "      |   " + avg(timeMs, loop) + "    |");
+		return new double[]{new Double(avg(timeRs, loop)), new Double(avg(timeJs, loop)), new Double(avg(timeHs, loop)), new Double(avg(timeMs, loop))};
+	}
+	
+	private static String avg(List<Double> times, int loop){
+		Collections.sort(times);
+		double count = 0;
+		for (int i = 0; i < times.size(); i++) {
+			count += times.get(i);
+		}
+		
+		return df.format(count/loop);
 	}
 	
 	//set rexdb dynamicClass setting
@@ -225,74 +245,31 @@ public class RunTest {
 				fast = true;
 		}
 		
-		Map<String, long[]> results = new LinkedHashMap<String, long[]>();
+		Map<String, double[]> results = new LinkedHashMap<String, double[]>();
 		
 		//--------fast test
 		test.deleteRows();
-		if(fast){
-			int fastLoop = 30;
-			System.out.println("================== running fast test ==================");
+		int loop = fast ? 10 : 3;
 			
-			//test insert
-//			results.put("insert-50", test.opers("insert-50", OPER_INSERT, fastLoop, 50));
-			test.deleteRows();
-			
-			//test batch insert
-			results.put("batchInsert-10k", test.opers("batchInsert-10k", OPER_BATCH, fastLoop, 10000));
-			test.deleteRows();
-			
-			//test get list
-			test.initRows(10000);
-			results.put("getList-10k", test.opers("getList-10k", OPER_QUERY_LIST, fastLoop, 1));
-			test.deleteRows();
-
-		//-------fully test
-		}else{
-			int loop = 1;
-			System.out.println("================== running fully test ==================");
-			
-			//test insert
-			results.put("insert-100", test.opers("insert-100", OPER_INSERT, loop, 100));
-			results.put("insert-200", test.opers("insert-200", OPER_INSERT, loop, 200));
-			results.put("insert-500", test.opers("insert-500", OPER_INSERT, loop, 500));
-			test.deleteRows();
-			
-//			//test batch insert
-			results.put("batchInsert-10k", test.opers("batchInsert-10k", OPER_BATCH, loop, 10000));
-			results.put("batchInsert-50k", test.opers("batchInsert-50k", OPER_BATCH, loop, 50000));
-			results.put("batchInsert-100k", test.opers("batchInsert-100k", OPER_BATCH, loop, 100000));
-			test.deleteRows();
-			
-			//test get list
-			test.initRows(10000);
-			results.put("getList-10k", test.opers("getList-10k", OPER_QUERY_LIST, loop, 1));
-			results.put("getMapList-10k", test.opers("getMapList-10k", OPER_QUERY_MAPLIST, loop, 1));
-			
-			test.setRexdbDynamicClass(false);
-			results.put("getList-disableDynamic-10k", test.opers("getList-10k", OPER_QUERY_LIST, loop, 1));
-			test.setRexdbDynamicClass(true);
+		System.out.println("===================== running test ======================");
 		
-			test.deleteRows();
-			test.initRows(50000);
-			results.put("getList-50k", test.opers("getList-50k", OPER_QUERY_LIST, loop, 1));	
-			results.put("getMapList-50k", test.opers("getMapList-50k", OPER_QUERY_MAPLIST, loop, 1));
-			
-			test.setRexdbDynamicClass(false);
-			results.put("getList-disableDynamic-50k", test.opers("getList-50k", OPER_QUERY_LIST, loop, 1));
-			test.setRexdbDynamicClass(true);
-			
-			test.deleteRows();
-			test.initRows(100000);
-			results.put("getList-100k", test.opers("getList-100k", OPER_QUERY_LIST, loop, 1));
-			results.put("getMapList-100k", test.opers("getMapList-100k", OPER_QUERY_MAPLIST, loop, 1));
-			
-			test.setRexdbDynamicClass(false);
-			results.put("getList-disableDynamic-100k", test.opers("getList-100k", OPER_QUERY_LIST, loop, 1));
-			test.setRexdbDynamicClass(true);
-			
-			test.deleteRows();
-		}
+		//test insert
+		results.put("insert", test.opers("insert", OPER_INSERT, loop, 200));
+		test.deleteRows();
 		
+		//test batch insert
+		results.put("batchInsert", test.opers("batchInsert", OPER_BATCH, loop, 50000));
+		test.deleteRows();
+		
+		//test get list
+		test.initRows(50000);
+		results.put("getList", test.opers("getList", OPER_QUERY_LIST, loop, 50000));
+		test.setRexdbDynamicClass(false);
+		results.put("getList-disableDynamicClass", test.opers("getList-disableDynamic", OPER_QUERY_LIST, loop, 50000));
+		test.setRexdbDynamicClass(true);
+		results.put("getMapList", test.opers("getMapList", OPER_QUERY_MAPLIST, loop, 50000));
+		
+		test.deleteRows();
 		
 		//------print results
 		printResult(results);
@@ -300,29 +277,29 @@ public class RunTest {
 	}
 	
 	//print result
-	public static void printResult(Map<String, long[]> result){
+	public static void printResult(Map<String, double[]> result){
 		System.out.println("================== printing result ==================");
-		System.out.println("|   OPER/COSTS(ms)   |   hibernate   |   mybatis   |    jdbc    |   rexdb  |");
+		System.out.println("|   OPER/COSTS(ms)   |     rexdb     |     jdbc    |  hibernate |  mybatis |");
 		System.out.println("| ------------------ | ------------- | ----------- | ---------- | -------- |");
 		
-		for (Iterator<Map.Entry<String, long[]>> iterator = result.entrySet().iterator(); iterator.hasNext();) {
-			Map.Entry<String, long[]> entry = iterator.next();
+		for (Iterator<Map.Entry<String, double[]>> iterator = result.entrySet().iterator(); iterator.hasNext();) {
+			Map.Entry<String, double[]> entry = iterator.next();
 			String key = entry.getKey();
-			long[] values = entry.getValue();
+			double[] values = entry.getValue();
 			
 			System.out.println("|   " + key + "   |     " + values[0] + "     |     " + values[1] + "     |   " + values[2] + "   |   " + values[3] + "   |");
 		}
 	}
 	
 	//print json
-	public static void printJson(Map<String, long[]> result){
+	public static void printJson(Map<String, double[]> result){
 		System.out.println("================== printing json result ==================");
 		
 		Map datas = new LinkedHashMap();
-		for (Iterator<Map.Entry<String, long[]>> iterator = result.entrySet().iterator(); iterator.hasNext();) {
-			Map.Entry<String, long[]> entry = iterator.next();
+		for (Iterator<Map.Entry<String, double[]>> iterator = result.entrySet().iterator(); iterator.hasNext();) {
+			Map.Entry<String, double[]> entry = iterator.next();
 			String key = entry.getKey();
-			long[] values = entry.getValue();
+			double[] values = entry.getValue();
 			Map costs = new LinkedHashMap();
 			costs.put("hibernate", values[0]);
 			costs.put("mybatis", values[1]);
