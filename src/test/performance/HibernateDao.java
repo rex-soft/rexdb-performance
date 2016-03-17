@@ -22,9 +22,9 @@ public class HibernateDao extends Dao{
 	public int insert() throws Exception {
 		Session session = getSession();
 		try {
-			session.beginTransaction();
+			Transaction tx = session.beginTransaction();
 			Serializable key = session.save(super.newStudent());
-			session.getTransaction().commit();
+			tx.commit();
 			return key == null ? 0 : 1;
 		} finally {
 			session.close();
@@ -79,10 +79,18 @@ public class HibernateDao extends Dao{
 	public int delete() throws Exception {
 		Session session = getSession();
 		try {
-			return session.createQuery("delete Student").executeUpdate();
+			Transaction tx = session.beginTransaction();
+			int i = session.createQuery("delete Student").executeUpdate();
+			tx.commit();
+			return i;
 		} finally {
 			session.close();
 		}
+	}
+	
+	@Override
+	public String getName() throws Exception {
+		return "hibernate";
 	}
 
 	//--------------MAIN TEST
@@ -92,6 +100,7 @@ public class HibernateDao extends Dao{
 		System.out.println(dao.getList());
 		System.out.println(dao.delete());
 	}
+
 
 
 }

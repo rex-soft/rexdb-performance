@@ -19,5 +19,12 @@
 	<classpathentry kind="lib" path="lib/fastjson-1.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/classes12.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.26-bin.jar"/>
+	<classpathentry kind="lib" path="lib/spring-core-4.2.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-jdbc-4.2.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-orm-4.2.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-beans-4.2.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-context-4.2.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-tx-4.2.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-expression-4.2.5.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

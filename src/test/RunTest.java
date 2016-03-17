@@ -23,6 +23,7 @@ import test.performance.HibernateDao;
 import test.performance.JdbcDao;
 import test.performance.MybatisDao;
 import test.performance.RexdbDao;
+import test.performance.SpringDao;
 
 public class RunTest {
 	
@@ -37,20 +38,22 @@ public class RunTest {
 	//--daos
 	Dao hibernateDao;
 	Dao mybatisDao;
+	Dao springDao;
 	Dao rexdbDao;
 	Dao jdbcDao;
 	
 	//--framework enabled
-	boolean hibernateEnabled, mybatisEnabled, rexdbEnabled, jdbcEnabled;
+	boolean hibernateEnabled, mybatisEnabled, springEnabled, rexdbEnabled, jdbcEnabled;
 	
 	public RunTest() throws Exception{
 		hibernateDao = new HibernateDao();
 		mybatisDao = new MybatisDao();
+		springDao = SpringDao.getDao();
 		rexdbDao = new RexdbDao();
 		jdbcDao = new JdbcDao();
 		
 		rebuildTable();
-		testFramework();
+		testFrameworks();
 	}
 	
 	//--recreate table
@@ -88,70 +91,37 @@ public class RunTest {
 			System.out.println("--- error: "+e.getMessage());
 		}
 	}
-	
-	//test frameworks
-	public void testFramework() throws Exception{
+
+	//test framework
+	public void testFrameworks() throws Exception{
 		System.out.println("================== testing frameworks ==================");
 		
+		hibernateEnabled = testFramework(hibernateDao);
+		mybatisEnabled = testFramework(mybatisDao);
+		springEnabled = testFramework(springDao);
+		rexdbEnabled = testFramework(rexdbDao);
+		jdbcEnabled = testFramework(jdbcDao);
+	}
+	
+	private boolean testFramework(Dao dao) throws Exception{
+		boolean enabled = false;
 		try{
-			hibernateDao.delete();
+			dao.delete();
+			dao.insert();
+			dao.batchInsert(1);
+			dao.getList();
+			dao.getMapList();
+			dao.delete();
 			
-			hibernateDao.insert();
-			hibernateDao.batchInsert(1);
-			hibernateDao.getList();
-			hibernateDao.getMapList();
-			hibernateDao.delete();
-			
-			hibernateEnabled = true;
+			enabled = true;
 		}catch(Exception e){
-			System.out.println("-- hibernate error: " + e.getMessage());
-			hibernateEnabled = false;
-		}
-		
-		try{
-			mybatisDao.insert();
-			mybatisDao.batchInsert(1);
-			mybatisDao.getList();
-			mybatisDao.getMapList();
-			mybatisDao.delete();
-			
-			mybatisEnabled = true;
-		}catch(Exception e){
-			System.out.println("-- mybatis error: " + e.getMessage());
-			mybatisEnabled = false;
-		}
-		
-		try{
-			rexdbDao.insert();
-			rexdbDao.batchInsert(1);
-			rexdbDao.getList();
-			rexdbDao.getMapList();
-			rexdbDao.delete();
-			
-			rexdbEnabled = true;
-		}catch(Exception e){
-			System.out.println("-- rexdb error: " + e.getMessage());
+			System.out.println("-- "+dao.getName()+" error: " + e.getMessage());
 			e.printStackTrace();
-			rexdbEnabled = false;
+			enabled = false;
 		}
+		System.out.println("--- "+dao.getName()+"Enabled: "+ enabled);
 		
-		try{
-			jdbcDao.insert();
-			jdbcDao.batchInsert(1);
-			jdbcDao.getList();
-			jdbcDao.getMapList();
-			jdbcDao.delete();
-			
-			jdbcEnabled = true;
-		}catch(Exception e){
-			System.out.println("-- jdbc error: " + e.getMessage());
-			jdbcEnabled = false;
-		}
-		
-		System.out.println("--- hibernateEnabled: "+hibernateEnabled);
-		System.out.println("--- mybatisEnabled: "+mybatisEnabled);
-		System.out.println("--- rexdbEnabled: "+rexdbEnabled);
-		System.out.println("--- jdbcEnabled: "+jdbcEnabled);
+		return enabled;
 	}
 	
 	//remove all rows
@@ -161,6 +131,7 @@ public class RunTest {
 	
 	//insert rows for test
 	public void initRows(int rows) throws Exception{
+		System.out.println("------------------------- init "+rows+" rows --------------------------");
 		rexdbDao.batchInsert(rows);
 	}
 	
@@ -184,39 +155,47 @@ public class RunTest {
 	
 	//test insert performance
 	public double[] opers(String testName, int operation, int loop, int rows) throws Exception{
-		System.out.println("----------------- testing "+testName+" (Rows per second) ----------------");
-		System.out.println("|      |     rexdb     |     jdbc     |    hibernate    |  mybatis   |");
-		System.out.println("| ---- | ------------- | ------------ | --------------- | ---------- |");
+		System.out.println("-------------- testing "+testName+" (ffected Rows per second) ------------");
+		System.out.println("|      |     rexdb     |     jdbc     |    hibernate    |  mybatis   |  spring   |");
+		System.out.println("| ---- | ------------- | ------------ | --------------- | ---------- | --------- |");
 		
 		List<Double> timeRs = new ArrayList<Double>(),
 					timeJs = new ArrayList<Double>(),
 					timeHs = new ArrayList<Double>(),
-					timeMs = new ArrayList<Double>();
+					timeMs = new ArrayList<Double>(),
+					timeSs = new ArrayList<Double>();
 		
 		for (int i = 0; i < loop; i++) {
-			double h = 0, m = 0, r = 0, j = 0;
-			double timeH, timeM, timeJ, timeR;
+			double h = 0, m = 0, r = 0, j = 0, s = 0;
+			double timeH, timeM, timeJ, timeR, timeS;
 			
 			if(rexdbEnabled) r = oper(operation, rexdbDao, rows);
 			if(jdbcEnabled) j = oper(operation, jdbcDao, rows);
 			if(hibernateEnabled) h = oper(operation, hibernateDao, rows);
 			if(mybatisEnabled) m = oper(operation, mybatisDao, rows);
+			if(springEnabled) s = oper(operation, springDao, rows);
 			
-			timeR = rows/(r/1000);
-			timeJ = rows/(j/1000);
-			timeH = rows/(h/1000);
-			timeM = rows/(m/1000);
+			timeR = r == 0 ? 0 : rows/(r/1000);
+			timeJ = j == 0 ? 0 : rows/(j/1000);
+			timeH = h == 0 ? 0 : rows/(h/1000);
+			timeM = m == 0 ? 0 : rows/(m/1000);
+			timeS = s == 0 ? 0 : rows/(s/1000);
 			
 			timeRs.add(timeR);
 			timeJs.add(timeJ);
 			timeHs.add(timeH);
 			timeMs.add(timeM);
+			timeSs.add(timeS);
 			
-			System.out.println("|   " + (i + 1) + "  |     " + df.format(timeR) + "     |    " + df.format(timeJ) + "     |      " + df.format(timeH) + "      |   " + df.format(timeM) + "    |");
+			System.out.println("|   " + (i + 1) + "  |     " + df.format(timeR) + "     |    " + df.format(timeJ) + "     |      " + 
+						df.format(timeH) + "      |   " + df.format(timeM) + "    |   " + df.format(timeS) + "    |");
 		}
 		
-		System.out.println("| AVG  |     " + avg(timeRs, loop) + "     |    " + avg(timeJs, loop) + "     |      " + avg(timeHs, loop) + "      |   " + avg(timeMs, loop) + "    |");
-		return new double[]{new Double(avg(timeRs, loop)), new Double(avg(timeJs, loop)), new Double(avg(timeHs, loop)), new Double(avg(timeMs, loop))};
+		System.out.println("| AVG  |     " + avg(timeRs, loop) + "     |    " + avg(timeJs, loop) + "     |      " + 
+				avg(timeHs, loop) + "      |   " + avg(timeMs, loop) + "    |" + avg(timeSs, loop) + "    |");
+		
+		return new double[]{new Double(avg(timeRs, loop)), new Double(avg(timeJs, loop)), new Double(avg(timeHs, loop)), 
+				new Double(avg(timeMs, loop)), new Double(avg(timeSs, loop))};
 	}
 	
 	private static String avg(List<Double> times, int loop){
@@ -226,6 +205,8 @@ public class RunTest {
 			count += times.get(i);
 		}
 		
+		if(count == 0) return "0";
+		
 		return df.format(count/loop);
 	}
 	
@@ -233,7 +214,6 @@ public class RunTest {
 	public void  setRexdbDynamicClass(boolean dynamicClass) throws DBException{
 		Configuration.getCurrentConfiguration().setDynamicClass(dynamicClass);
 	}
-	
 	
 	//----------START TESTING
 	public static void main(String[] args) throws Exception {
@@ -249,7 +229,7 @@ public class RunTest {
 		
 		//--------fast test
 		test.deleteRows();
-		int loop = fast ? 10 : 30;
+		int loop = fast ? 10 : 50;
 			
 		System.out.println("===================== running test ======================");
 		
@@ -279,15 +259,16 @@ public class RunTest {
 	//print result
 	public static void printResult(Map<String, double[]> result){
 		System.out.println("================== printing result ==================");
-		System.out.println("|   OPER/COSTS(ms)   |     rexdb     |     jdbc    |  hibernate |  mybatis |");
-		System.out.println("| ------------------ | ------------- | ----------- | ---------- | -------- |");
+		System.out.println("|   OPER/COSTS(ms)   |     rexdb     |     jdbc    |  hibernate |  mybatis |  spring |");
+		System.out.println("| ------------------ | ------------- | ----------- | ---------- | -------- | ------- |");
 		
 		for (Iterator<Map.Entry<String, double[]>> iterator = result.entrySet().iterator(); iterator.hasNext();) {
 			Map.Entry<String, double[]> entry = iterator.next();
 			String key = entry.getKey();
 			double[] values = entry.getValue();
 			
-			System.out.println("|   " + key + "   |     " + values[0] + "     |     " + values[1] + "     |   " + values[2] + "   |   " + values[3] + "   |");
+			System.out.println("|   " + key + "   |     " + values[0] + "     |     " + values[1] + "     |   " + 
+					values[2] + "   |   " + values[3] + "   |" + values[4] + "   |");
 		}
 	}
 	
@@ -305,6 +286,7 @@ public class RunTest {
 			costs.put("mybatis", values[1]);
 			costs.put("jdbc", values[2]);
 			costs.put("rexdb", values[3]);
+			costs.put("spring", values[4]);
 			
 			datas.put(key, costs);
 		}

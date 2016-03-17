@@ -31,7 +31,11 @@ public abstract class Dao {
 	 * insert rows batch
 	 */
 	public abstract int[] batchInsert(int i) throws Exception;
-
+	
+	/**
+	 * get DAO name
+	 */
+	public abstract String getName() throws Exception;
 	
 	public static volatile long studentId = 100000;
 	

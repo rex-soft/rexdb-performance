@@ -1,7 +1,6 @@
 package test.performance;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.io.Resources;
@@ -86,6 +85,11 @@ public class MybatisDao extends Dao{
 		}finally{
 			session.close();
 		}
+	}
+	
+	@Override
+	public String getName() throws Exception {
+		return "mybatis";
 	}
 
 	//--------------MAIN TEST

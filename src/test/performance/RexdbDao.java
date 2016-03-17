@@ -43,6 +43,11 @@ public class RexdbDao extends Dao {
 		// TODO Auto-generated method stub
 		return DB.update("DELETE FROM r_student");
 	}
+	
+	@Override
+	public String getName() throws Exception {
+		return "rexdb";
+	}
 
 	// --------------MAIN TEST
 	public static void main(String[] args) throws Exception {

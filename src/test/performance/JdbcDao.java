@@ -60,9 +60,9 @@ public class JdbcDao extends Dao{
 			ps.setLong(1, stu.getStudentId());
 			ps.setString(2, stu.getName());
 			ps.setObject(3, stu.getSex());
-			ps.setObject(4, stu.getBirthday());
-			ps.setObject(5, stu.getBirthTime());
-			ps.setObject(6, stu.getEnrollmentTime());
+			ps.setObject(4, new java.sql.Timestamp(stu.getBirthday().getTime()));
+			ps.setObject(5, new java.sql.Timestamp(stu.getBirthTime().getTime()));
+			ps.setObject(6, new java.sql.Timestamp(stu.getEnrollmentTime().getTime()));
 			ps.setObject(7, stu.getMajor());
 			ps.setObject(8, stu.getPhoto());
 			ps.setObject(9, stu.getRemark());
@@ -169,9 +169,9 @@ public class JdbcDao extends Dao{
 				ps.setLong(1, stu.getStudentId());
 				ps.setString(2, stu.getName());
 				ps.setObject(3, stu.getSex());
-				ps.setObject(4, stu.getBirthday());
-				ps.setObject(5, stu.getBirthTime());
-				ps.setObject(6, stu.getEnrollmentTime());
+				ps.setObject(4, new java.sql.Timestamp(stu.getBirthday().getTime()));
+				ps.setObject(5, new java.sql.Timestamp(stu.getBirthTime().getTime()));
+				ps.setObject(6, new java.sql.Timestamp(stu.getEnrollmentTime().getTime()));
 				ps.setObject(7, stu.getMajor());
 				ps.setObject(8, stu.getPhoto());
 				ps.setObject(9, stu.getRemark());
@@ -186,5 +186,8 @@ public class JdbcDao extends Dao{
 		}
 	}
 
-
+	@Override
+	public String getName() throws Exception {
+		return "jdbc";
+	}
 }
