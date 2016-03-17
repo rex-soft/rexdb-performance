@@ -9,11 +9,11 @@
 	
 <!-- <property name="hibernate.show_sql">true</property> -->
 
-<!--  		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+  		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
 		<property name="connection.url">jdbc:mysql://localhost:3306/rexdb?rewriteBatchedStatements=true</property>
 		<property name="connection.username">root</property>
 		<property name="connection.password">12345678</property> 
-		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>-->
+		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
 		
 <!--  		<property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
 		<property name="connection.url">jdbc:oracle:thin:@192.168.4.11:1521:cecpay</property>
@@ -21,11 +21,11 @@
 		<property name="connection.password"><![CDATA[g&2#!6&8py]]></property>
 		<property name="dialect">org.hibernate.dialect.OracleDialect</property> -->
 		
-		<property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
+<!-- 		<property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
 		<property name="connection.url">jdbc:oracle:thin:@127.0.0.1:1521:orcl</property>
 		<property name="connection.username">rexdb</property>
 		<property name="connection.password"><![CDATA[12345678]]></property>
-		<property name="dialect">org.hibernate.dialect.OracleDialect</property>
+		<property name="dialect">org.hibernate.dialect.OracleDialect</property> -->
 		
 		<property name="current_session_context_class">thread</property>
 		<property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>

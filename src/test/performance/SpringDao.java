@@ -70,6 +70,11 @@ public class SpringDao extends Dao{
 		return template.update(sql, values);
 	}
 
+	@Override
+	public int insertPs() throws Exception {
+		return insert();
+	}
+
 	public List getList() throws Exception {
 		return template.query("SELECT * FROM r_student", new StudentsRowMapper());
 	}
@@ -104,9 +109,15 @@ public class SpringDao extends Dao{
 		
 		return template.batchUpdate(sql, values);
 	}
+	
+	@Override
+	public int[] batchInsertPs(int rows) throws Exception {
+		return batchInsert(rows);
+	}
 
 	@Override
 	public String getName() throws Exception {
 		return "spring";
 	}
+
 }

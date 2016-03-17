@@ -74,6 +74,11 @@ public class JdbcDao extends Dao{
 			conn.close();
 		}
 	}
+	
+	@Override
+	public int insertPs() throws Exception {
+		return insert();
+	}
 
 	@Override
 	public List getList() throws Exception {
@@ -185,9 +190,16 @@ public class JdbcDao extends Dao{
 			conn.close();
 		}
 	}
+	
+
+	@Override
+	public int[] batchInsertPs(int rows) throws Exception {
+		return batchInsert(rows);
+	}
 
 	@Override
 	public String getName() throws Exception {
 		return "jdbc";
 	}
+
 }

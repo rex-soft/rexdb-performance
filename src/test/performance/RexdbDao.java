@@ -3,6 +3,7 @@ package test.performance;
 import java.util.List;
 
 import org.rex.DB;
+import org.rex.db.Ps;
 
 import test.Student;
 
@@ -16,6 +17,12 @@ public class RexdbDao extends Dao {
 	}
 
 	@Override
+	public int insertPs() throws Exception {
+		String sql = "INSERT INTO R_STUDENT(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
+		return DB.update(sql, super.newPs());
+	}
+	
+	@Override
 	public int[] batchInsert(int rows) throws Exception {
 		String sql = "INSERT INTO r_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly)"
 				+ " VALUES (#{studentId},#{name},#{sex},#{birthday},#{birthTime},#{enrollmentTime},#{major},#{photo},#{remark},#{readonly})";
@@ -26,7 +33,17 @@ public class RexdbDao extends Dao {
 		}
 		return DB.batchUpdate(sql, students);
 	}
-
+	
+	@Override
+	public int[] batchInsertPs(int rows) throws Exception {
+		String sql = "INSERT INTO R_STUDENT(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
+		Ps[] pss = new Ps[rows];
+		for (int i = 0; i < rows; i++) {
+			pss[i] = super.newPs();
+		}
+		return DB.batchUpdate(sql, pss);
+	}
+	
 	@Override
 	public List getList() throws Exception {
 		List list= DB.getList("SELECT * FROM r_student", Student.class);

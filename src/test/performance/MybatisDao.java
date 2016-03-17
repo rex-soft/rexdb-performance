@@ -42,6 +42,11 @@ public class MybatisDao extends Dao{
 	}
 	
 	@Override
+	public int insertPs() throws Exception {
+		return insert();
+	}
+
+	@Override
 	public int[] batchInsert(int rows) throws Exception {
 		int c = 0;
 		SqlSession session = getSession(true);
@@ -54,6 +59,11 @@ public class MybatisDao extends Dao{
 			session.close();
 		}
 		return new int[]{c};
+	}
+	
+	@Override
+	public int[] batchInsertPs(int rows) throws Exception {
+		return batchInsert(rows);
 	}
 	
 	@Override

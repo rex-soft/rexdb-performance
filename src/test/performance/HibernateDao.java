@@ -32,6 +32,11 @@ public class HibernateDao extends Dao{
 	}
 	
 	@Override
+	public int insertPs() throws Exception {
+		return insert();
+	}
+
+	@Override
 	public int[] batchInsert(int rows) throws Exception {
 		int[] c = new int[rows];
 		Session session = getSession();
@@ -48,6 +53,11 @@ public class HibernateDao extends Dao{
 		} finally {
 			session.close();
 		}
+	}
+	
+	@Override
+	public int[] batchInsertPs(int rows) throws Exception {
+		return batchInsert(rows);
 	}
 
 	@Override
@@ -100,7 +110,5 @@ public class HibernateDao extends Dao{
 		System.out.println(dao.getList());
 		System.out.println(dao.delete());
 	}
-
-
 
 }

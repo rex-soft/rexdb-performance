@@ -3,6 +3,8 @@ package test.performance;
 import java.util.Date;
 import java.util.List;
 
+import org.rex.db.Ps;
+
 import test.Student;
 
 public abstract class Dao {
@@ -11,6 +13,11 @@ public abstract class Dao {
 	 * insert 1 row
 	 */
 	public abstract int insert() throws Exception;
+	
+	/**
+	 * insert 1 row
+	 */
+	public abstract int insertPs() throws Exception;
 
 	/**
 	 * select all rows
@@ -31,6 +38,11 @@ public abstract class Dao {
 	 * insert rows batch
 	 */
 	public abstract int[] batchInsert(int i) throws Exception;
+	
+	/**
+	 * insert rows batch
+	 */
+	public abstract int[] batchInsertPs(int i) throws Exception;
 	
 	/**
 	 * get DAO name
@@ -57,5 +69,23 @@ public abstract class Dao {
 		student.setMajor(10);
 		student.setReadonly(1);
 		return student;
+	}
+	
+	/**
+	 * new student ps
+	 */
+	protected static Ps newPs(){
+		Ps ps = new Ps();
+		ps.add(getId());
+		ps.add("Jim");
+		ps.add(1);
+		ps.add(new Date());
+		ps.add(new Date());
+		ps.add(new Date());
+		ps.add(10);
+		ps.addNull();
+		ps.addNull();
+		ps.add(1);
+		return ps;
 	}
 }

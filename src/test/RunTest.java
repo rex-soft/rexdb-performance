@@ -31,9 +31,12 @@ public class RunTest {
 	
 	//--operation
 	public static final int OPER_INSERT = 0;
-	public static final int OPER_QUERY_LIST = 1;
-	public static final int OPER_QUERY_MAPLIST = 2;
-	public static final int OPER_BATCH = 3;
+	public static final int OPER_INSERT_PS = 1;
+	public static final int OPER_BATCH = 2;
+	public static final int OPER_BATCH_PS = 3;
+	public static final int OPER_QUERY_LIST = 4;
+	public static final int OPER_QUERY_MAPLIST = 5;
+
 	
 	//--daos
 	Dao hibernateDao;
@@ -140,6 +143,8 @@ public class RunTest {
 		
 		if(OPER_BATCH == operation){
 			dao.batchInsert(rows);
+		}else if(OPER_BATCH_PS == operation){
+			dao.batchInsertPs(rows);
 		}else if(OPER_QUERY_LIST == operation){
 			dao.getList();
 		}else if(OPER_QUERY_MAPLIST == operation){
@@ -148,6 +153,10 @@ public class RunTest {
 			for (int i = 0; i < rows; i++) {
 				dao.insert();
 			}
+		}else if(OPER_INSERT_PS == operation){
+			for (int i = 0; i < rows; i++) {
+				dao.insertPs();
+			}
 		}
 		
 		return System.currentTimeMillis() - start;
@@ -155,7 +164,7 @@ public class RunTest {
 	
 	//test insert performance
 	public double[] opers(String testName, int operation, int loop, int rows) throws Exception{
-		System.out.println("-------------- testing "+testName+" (ffected Rows per second) ------------");
+		System.out.println("-------------- testing "+testName+" (Affected Rows per second) ------------");
 		System.out.println("|      |     rexdb     |     jdbc     |    hibernate    |  mybatis   |  spring   |");
 		System.out.println("| ---- | ------------- | ------------ | --------------- | ---------- | --------- |");
 		
@@ -230,24 +239,33 @@ public class RunTest {
 		//--------fast test
 		test.deleteRows();
 		int loop = fast ? 10 : 50;
+		int der = fast ? 5 : 1;
 			
 		System.out.println("===================== running test ======================");
 		
 		//test insert
-		results.put("insert", test.opers("insert", OPER_INSERT, loop, 500));
+		results.put("insert", test.opers("insert", OPER_INSERT, loop, 500/der));
+		test.deleteRows();
+		
+		//test insert Ps
+		results.put("insertPs", test.opers("insertPs", OPER_INSERT_PS, loop, 500/der));
 		test.deleteRows();
 		
 		//test batch insert
-		results.put("batchInsert", test.opers("batchInsert", OPER_BATCH, loop, 50000));
+		results.put("batchInsert", test.opers("batchInsert", OPER_BATCH, loop, 50000/der));
+		test.deleteRows();
+		
+		//test batch insert Ps
+		results.put("batchInsertPs", test.opers("batchInsertPs", OPER_BATCH_PS, loop, 50000/der));
 		test.deleteRows();
 		
 		//test get list
-		test.initRows(50000);
-		results.put("getList", test.opers("getList", OPER_QUERY_LIST, loop, 50000));
+		test.initRows(50000/der);
+		results.put("getList", test.opers("getList", OPER_QUERY_LIST, loop, 50000/der));
 		test.setRexdbDynamicClass(false);
-		results.put("getList-disableDynamicClass", test.opers("getList-disableDynamic", OPER_QUERY_LIST, loop, 50000));
+		results.put("getList-disableDynamicClass", test.opers("getList-disableDynamic", OPER_QUERY_LIST, loop, 50000/der));
 		test.setRexdbDynamicClass(true);
-		results.put("getMapList", test.opers("getMapList", OPER_QUERY_MAPLIST, loop, 50000));
+		results.put("getMapList", test.opers("getMapList", OPER_QUERY_MAPLIST, loop, 50000/der));
 		
 		test.deleteRows();
 		
@@ -282,10 +300,10 @@ public class RunTest {
 			String key = entry.getKey();
 			double[] values = entry.getValue();
 			Map costs = new LinkedHashMap();
-			costs.put("hibernate", values[0]);
-			costs.put("mybatis", values[1]);
-			costs.put("jdbc", values[2]);
-			costs.put("rexdb", values[3]);
+			costs.put("rexdb", values[0]);
+			costs.put("jdbc", values[1]);
+			costs.put("hibernate", values[2]);
+			costs.put("mybatis", values[3]);
 			costs.put("spring", values[4]);
 			
 			datas.put(key, costs);
