@@ -25,7 +25,7 @@ import test.performance.MybatisDao;
 import test.performance.RexdbDao;
 import test.performance.SpringDao;
 
-public class RunTest {
+public class RunPerformanceTest {
 	
 	static DecimalFormat df =new DecimalFormat("#.00");  
 	
@@ -48,7 +48,7 @@ public class RunTest {
 	//--framework enabled
 	boolean hibernateEnabled, mybatisEnabled, springEnabled, rexdbEnabled, jdbcEnabled;
 	
-	public RunTest() throws Exception{
+	public RunPerformanceTest() throws Exception{
 		hibernateDao = new HibernateDao();
 		mybatisDao = new MybatisDao();
 		springDao = SpringDao.getDao();
@@ -226,7 +226,7 @@ public class RunTest {
 	
 	//----------START TESTING
 	public static void main(String[] args) throws Exception {
-		RunTest test = new RunTest();
+		RunPerformanceTest test = new RunPerformanceTest();
 		
 		boolean fast = false;
 		for (int i = 0; i < args.length; i++) {
