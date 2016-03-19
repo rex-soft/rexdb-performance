@@ -1,4 +1,4 @@
-package test.api;
+package org.rex.db.test.api;
 
 import java.util.Date;
 import java.util.List;
@@ -8,6 +8,9 @@ import org.rex.RMap;
 import org.rex.db.Ps;
 import org.rex.db.exception.DBException;
 
+/**
+ * test transaction
+ */
 public class TestTransaction extends Base {
 
 	@Override
@@ -15,7 +18,12 @@ public class TestTransaction extends Base {
 		super.deleteAll();
 	}
 	
-	public void rollback() throws Exception {
+	@Override
+	public String getName() {
+		return "DB.transaction";
+	}
+	
+	public void testRollback() throws Exception {
 		super.deleteAll();
 		
 		DB.beginTransaction();
@@ -35,7 +43,7 @@ public class TestTransaction extends Base {
 	}
 	
 	
-	public void commit() throws Exception {
+	public void testCommit() throws Exception {
 		DB.beginTransaction();
 		try {
 			super.deleteAll();
@@ -53,19 +61,19 @@ public class TestTransaction extends Base {
 	
 	//----private
 	public int insert() throws Exception{
-		String sql = "insert into r_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly) values (?,?,?,?,?,?,?,?,?,?)";
+		String sql = "insert into rexdb_test_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly) values (?,?,?,?,?,?,?,?,?,?)";
 		return DB.update(sql, new Ps(super.getId(), "Jim", 1, new Date(), new Date(), new Date(), 10000, null, null, 0));
 	}
 	
 	public List<RMap> getMapList() throws DBException{
-		return DB.getMapList("select * from r_student");
+		return DB.getMapList("select * from rexdb_test_student");
 	}
 	
 	// --------------
 	public static void main(String[] args) throws Exception {
 		TestTransaction transaction = new TestTransaction();
-		transaction.commit();
-		transaction.rollback();
+		transaction.testCommit();
+		transaction.testRollback();
 	}
 
 }

@@ -1,11 +1,13 @@
-package test.performance;
+package org.rex.db.test.performance;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import org.rex.db.Ps;
-
-import test.Student;
+import org.rex.db.test.Student;
 
 public abstract class Dao {
 	
@@ -87,5 +89,23 @@ public abstract class Dao {
 		ps.addNull();
 		ps.add(1);
 		return ps;
+	}
+	
+	protected static Properties loadConnProperties(String resources) {
+		InputStream inputstream = Dao.class.getResourceAsStream(resources);
+		if(inputstream == null)
+			throw new RuntimeException("could not find properties "+resources);
+		Properties properties = new Properties();
+		try {
+			properties.load(inputstream);
+			return properties;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				inputstream.close();
+			} catch (IOException e) {
+			}
+		}
 	}
 }

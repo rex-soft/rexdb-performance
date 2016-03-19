@@ -1,8 +1,5 @@
-package test;
+package org.rex.db.test;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,23 +8,22 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.rex.DB;
 import org.rex.db.configuration.Configuration;
-import org.rex.db.dialect.Dialect;
 import org.rex.db.exception.DBException;
+import org.rex.db.test.performance.Dao;
+import org.rex.db.test.performance.HibernateDao;
+import org.rex.db.test.performance.JdbcDao;
+import org.rex.db.test.performance.MybatisDao;
+import org.rex.db.test.performance.RexdbDao;
+import org.rex.db.test.performance.SpringDao;
 
 import com.alibaba.fastjson.JSON;
 
-import test.performance.Dao;
-import test.performance.HibernateDao;
-import test.performance.JdbcDao;
-import test.performance.MybatisDao;
-import test.performance.RexdbDao;
-import test.performance.SpringDao;
-
-public class RunPerformanceTest {
+public class RunPerformanceTest implements Runner{
 	
 	static DecimalFormat df =new DecimalFormat("#.00");  
+	
+	private boolean fast = false;
 	
 	//--operation
 	public static final int OPER_INSERT = 0;
@@ -55,44 +51,16 @@ public class RunPerformanceTest {
 		rexdbDao = new RexdbDao();
 		jdbcDao = new JdbcDao();
 		
-		rebuildTable();
 		testFrameworks();
 	}
 	
-	//--recreate table
-	public void rebuildTable() throws Exception{
-		System.out.println("================== creating table r_student ==================");
-		
-		Dialect dialect = DB.getDialect();
-		if(dialect == null)
-			throw new Exception("database not support, dialect required.");
-		String name = dialect.getName();
-		
-		InputStream is = this.getClass().getResourceAsStream("/create/"+name.toLowerCase()+".sql");
-		if(is == null)
-			throw new Exception("file "+ "create/"+name.toLowerCase()+".sql" +" not exist.");
-		
-		BufferedReader in = new BufferedReader(new InputStreamReader(is));
-		StringBuffer sb = new StringBuffer();
-		String line = null;
-		while((line = in.readLine())!=null){
-			if(!line.startsWith("--"))
-				sb.append(line);
-		}
-		
-		String[] sqls = sb.toString().split(";");
-		
-		DB.beginTransaction();
-		try{
-			for (int i = 0; i < sqls.length; i++) {
-				DB.update(sqls[i]);
-				System.out.println("--- execute: "+sqls[i]);
-			}
-			DB.commit();
-		}catch(Exception e){
-			DB.rollback();
-			System.out.println("--- error: "+e.getMessage());
-		}
+	public RunPerformanceTest(boolean fast) throws Exception{
+		this();
+		setFast(fast);
+	}
+
+	public void setFast(boolean fast) {
+		this.fast = fast;
 	}
 
 	//test framework
@@ -119,10 +87,9 @@ public class RunPerformanceTest {
 			enabled = true;
 		}catch(Exception e){
 			System.out.println("-- "+dao.getName()+" error: " + e.getMessage());
-			e.printStackTrace();
 			enabled = false;
 		}
-		System.out.println("--- "+dao.getName()+"Enabled: "+ enabled);
+		System.out.println("-- "+dao.getName()+"Enabled: "+ enabled);
 		
 		return enabled;
 	}
@@ -224,56 +191,6 @@ public class RunPerformanceTest {
 		Configuration.getCurrentConfiguration().setDynamicClass(dynamicClass);
 	}
 	
-	//----------START TESTING
-	public static void main(String[] args) throws Exception {
-		RunPerformanceTest test = new RunPerformanceTest();
-		
-		boolean fast = false;
-		for (int i = 0; i < args.length; i++) {
-			if("fast".equals(args[i]))
-				fast = true;
-		}
-		
-		Map<String, double[]> results = new LinkedHashMap<String, double[]>();
-		
-		//--------fast test
-		test.deleteRows();
-		int loop = fast ? 10 : 50;
-		int der = fast ? 5 : 1;
-			
-		System.out.println("===================== running test ======================");
-		
-		//test insert
-		results.put("insert", test.opers("insert", OPER_INSERT, loop, 500/der));
-		test.deleteRows();
-		
-		//test insert Ps
-		results.put("insertPs", test.opers("insertPs", OPER_INSERT_PS, loop, 500/der));
-		test.deleteRows();
-		
-		//test batch insert
-		results.put("batchInsert", test.opers("batchInsert", OPER_BATCH, loop, 50000/der));
-		test.deleteRows();
-		
-		//test batch insert Ps
-		results.put("batchInsertPs", test.opers("batchInsertPs", OPER_BATCH_PS, loop, 50000/der));
-		test.deleteRows();
-		
-		//test get list
-		test.initRows(50000/der);
-		results.put("getList", test.opers("getList", OPER_QUERY_LIST, loop, 50000/der));
-		test.setRexdbDynamicClass(false);
-		results.put("getList-disableDynamicClass", test.opers("getList-disableDynamic", OPER_QUERY_LIST, loop, 50000/der));
-		test.setRexdbDynamicClass(true);
-		results.put("getMapList", test.opers("getMapList", OPER_QUERY_MAPLIST, loop, 50000/der));
-		
-		test.deleteRows();
-		
-		//------print results
-		printResult(results);
-		printJson(results);
-	}
-	
 	//print result
 	public static void printResult(Map<String, double[]> result){
 		System.out.println("================== printing result ==================");
@@ -310,5 +227,62 @@ public class RunPerformanceTest {
 		}
 		
 		System.out.println(JSON.toJSONString(datas));
+	}
+
+	@Override
+	public void run() throws Exception {
+
+		Map<String, double[]> results = new LinkedHashMap<String, double[]>();
+		
+		//--------fast test
+		deleteRows();
+		int loop = fast ? 10 : 50;
+		int der = fast ? 5 : 1;
+			
+		System.out.println("===================== running performance test ======================");
+		
+		//test insert
+		results.put("insert", opers("insert", OPER_INSERT, loop, 500/der));
+		deleteRows();
+		
+		//test insert Ps
+		results.put("insertPs", opers("insertPs", OPER_INSERT_PS, loop, 500/der));
+		deleteRows();
+		
+		//test batch insert
+		results.put("batchInsert", opers("batchInsert", OPER_BATCH, loop, 50000/der));
+		deleteRows();
+		
+		//test batch insert Ps
+		results.put("batchInsertPs", opers("batchInsertPs", OPER_BATCH_PS, loop, 50000/der));
+		deleteRows();
+		
+		//test get list
+		initRows(50000/der);
+		results.put("getList", opers("getList", OPER_QUERY_LIST, loop, 50000/der));
+		setRexdbDynamicClass(false);
+		results.put("getList-disableDynamicClass", opers("getList-disableDynamic", OPER_QUERY_LIST, loop, 50000/der));
+		setRexdbDynamicClass(true);
+		results.put("getMapList", opers("getMapList", OPER_QUERY_MAPLIST, loop, 50000/der));
+		
+		deleteRows();
+		
+		//------print results
+		printResult(results);
+		printJson(results);
+	}
+	
+	//----------START TESTING
+	public static void main(String[] args) throws Exception {
+		boolean fast = false;
+		for (int i = 0; i < args.length; i++) {
+			if("fast".equals(args[i]))
+				fast = true;
+		}
+		
+		RunPerformanceTest test = new RunPerformanceTest();
+		test.fast = fast;
+		
+		test.run();
 	}
 }

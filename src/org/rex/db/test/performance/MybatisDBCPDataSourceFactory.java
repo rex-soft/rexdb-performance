@@ -1,4 +1,4 @@
-package mybatis;
+package org.rex.db.test.performance;
 
 import java.util.Properties;
 
@@ -7,11 +7,11 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.ibatis.datasource.DataSourceFactory;
 
-public class DBCPDataSourceFactory implements DataSourceFactory {
+public class MybatisDBCPDataSourceFactory implements DataSourceFactory {
 	
     private BasicDataSource datasource = null;
     
-    public DBCPDataSourceFactory(){
+    public MybatisDBCPDataSourceFactory(){
         this.datasource = new BasicDataSource();
     }
     

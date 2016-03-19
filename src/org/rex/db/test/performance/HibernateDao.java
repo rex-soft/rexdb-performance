@@ -1,23 +1,56 @@
-package test.performance;
+package org.rex.db.test.performance;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
 
 public class HibernateDao extends Dao{
 	static SessionFactory cf = null;
 	
-	static Session getSession(){
-		if(cf == null)
-			cf = new Configuration().configure().buildSessionFactory();
+	static Session getSession() throws Exception {
+		if (cf == null) {
+
+			Properties conn = loadConnProperties("/conn.properties");
+			Properties prop = loadConnProperties("/hibernate.properties");
+			
+			for (Iterator iterator = prop.entrySet().iterator(); iterator.hasNext();) {
+				Map.Entry entry = (Map.Entry) iterator.next();
+				String value = ((String)entry.getValue()).trim();
+				String key = (String)entry.getKey();
+				
+				if("${driverClassName}".equals(value)){
+					prop.put(key, conn.getProperty("driverClassName"));
+				}else if("${url}".equals(value)){
+					prop.put(key, conn.getProperty("url"));
+				}else if("${username}".equals(value)){
+					prop.put(key, conn.getProperty("username"));
+				}else if("${password}".equals(value)){
+					prop.put(key, conn.getProperty("password"));
+				}
+			}
+			
+			System.out.println(prop);
+			
+			Configuration configuration = new Configuration().addProperties(prop);
+			configuration.addInputStream(HibernateDao.class.getResourceAsStream("/Student.hbm.xml"));
+			ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+			cf = configuration.buildSessionFactory(serviceRegistry);
+		}
+
 		return cf.openSession();
 	}
-
+	
+	//-----------
 	@Override
 	public int insert() throws Exception {
 		Session session = getSession();
@@ -105,10 +138,11 @@ public class HibernateDao extends Dao{
 
 	//--------------MAIN TEST
 	public static void main(String[] args) throws Exception{
-		Dao dao = new HibernateDao();
+		HibernateDao dao = new HibernateDao();
 		System.out.println(dao.insert());
 		System.out.println(dao.getList());
 		System.out.println(dao.delete());
+		
 	}
 
 }

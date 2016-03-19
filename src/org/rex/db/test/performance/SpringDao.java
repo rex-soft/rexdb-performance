@@ -1,16 +1,15 @@
-package test.performance;
+package org.rex.db.test.performance;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.rex.db.test.Student;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-
-import test.Student;
 
 public class SpringDao extends Dao{
 	
@@ -53,7 +52,7 @@ public class SpringDao extends Dao{
 
 	//-----------------------implements
 	public int insert() throws Exception {
-		String sql = "INSERT INTO R_STUDENT(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO rexdb_test_student(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
 		Student stu = newStudent();
 		Object[] values = new Object[]{
 			stu.getStudentId(),
@@ -76,19 +75,19 @@ public class SpringDao extends Dao{
 	}
 
 	public List getList() throws Exception {
-		return template.query("SELECT * FROM r_student", new StudentsRowMapper());
+		return template.query("SELECT * FROM rexdb_test_student", new StudentsRowMapper());
 	}
 
 	public List getMapList() throws Exception {
-		return template.queryForList("SELECT * FROM r_student");
+		return template.queryForList("SELECT * FROM rexdb_test_student");
 	}
 
 	public int delete() throws Exception {
-		return template.update("DELETE FROM r_student");
+		return template.update("DELETE FROM rexdb_test_student");
 	}
 
 	public int[] batchInsert(int rows) throws Exception {
-		String sql = "INSERT INTO R_STUDENT(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO rexdb_test_student(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
 		List<Object[]> values = new ArrayList<Object[]>();
 		for (int i = 0; i < rows; i++) {
 			Student stu = newStudent();

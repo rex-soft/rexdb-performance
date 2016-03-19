@@ -1,7 +1,5 @@
-package test.performance;
+package org.rex.db.test.performance;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,15 +11,14 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.dbcp.BasicDataSource;
-
-import test.Student;
+import org.rex.db.test.Student;
 
 public class JdbcDao extends Dao{
 	
 	BasicDataSource bds = null;
 	
 	public JdbcDao(){
-		Properties prop = loadProperties("/conn.properties");
+		Properties prop = loadConnProperties("/conn.properties");
 		
 		bds = new BasicDataSource();
 		bds.setDriverClassName(prop.getProperty("driverClassName"));
@@ -30,27 +27,10 @@ public class JdbcDao extends Dao{
 		bds.setPassword(prop.getProperty("password"));
 	}
 
-	Properties loadProperties(String resources) {
-		InputStream inputstream = this.getClass().getResourceAsStream(resources);
-		if(inputstream == null)
-			throw new RuntimeException("could not find properties "+resources);
-		Properties properties = new Properties();
-		try {
-			properties.load(inputstream);
-			return properties;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				inputstream.close();
-			} catch (IOException e) {
-			}
-		}
-	}
 
 	@Override
 	public int insert() throws Exception {
-		String sql = "INSERT INTO R_STUDENT(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO rexdb_test_student(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
 		Connection conn = bds.getConnection();
 		PreparedStatement ps = null;
 		try {
@@ -82,7 +62,7 @@ public class JdbcDao extends Dao{
 
 	@Override
 	public List getList() throws Exception {
-		String sql = "SELECT * FROM R_STUDENT";
+		String sql = "SELECT * FROM rexdb_test_student";
 		List<Student> list = new ArrayList<Student>();
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -116,7 +96,7 @@ public class JdbcDao extends Dao{
 
 	@Override
 	public List getMapList() throws Exception {
-		String sql = "SELECT * FROM R_STUDENT";
+		String sql = "SELECT * FROM rexdb_test_student";
 		List<Map> list = new ArrayList<Map>();
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -149,7 +129,7 @@ public class JdbcDao extends Dao{
 
 	@Override
 	public int delete() throws Exception {
-		String sql = "DELETE FROM R_STUDENT";
+		String sql = "DELETE FROM rexdb_test_student";
 		Connection conn = bds.getConnection();
 		Statement statement = conn.createStatement();
 		try {
@@ -162,7 +142,7 @@ public class JdbcDao extends Dao{
 
 	@Override
 	public int[] batchInsert(int rows) throws Exception {
-		String sql = "INSERT INTO R_STUDENT(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO rexdb_test_student(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
 		Connection conn = bds.getConnection();
 		PreparedStatement ps = null;
 		try {

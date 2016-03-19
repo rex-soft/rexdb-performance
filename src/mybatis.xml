@@ -9,7 +9,7 @@
 	</settings>
 
 	<typeAliases>
-		<typeAlias type="mybatis.DBCPDataSourceFactory" alias="DBCP" />
+		<typeAlias type="org.rex.db.test.performance.MybatisDBCPDataSourceFactory" alias="DBCP" />
 	</typeAliases>
 
 	<environments default="development">

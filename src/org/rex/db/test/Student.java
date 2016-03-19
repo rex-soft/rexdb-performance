@@ -1,4 +1,4 @@
-package test;
+package org.rex.db.test;
 
 import java.util.Arrays;
 import java.util.Date;

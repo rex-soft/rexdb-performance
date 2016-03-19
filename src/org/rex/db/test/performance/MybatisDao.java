@@ -1,4 +1,4 @@
-package test.performance;
+package org.rex.db.test.performance;
 
 import java.io.IOException;
 import java.util.List;

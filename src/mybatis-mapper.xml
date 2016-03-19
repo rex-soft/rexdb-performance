@@ -3,35 +3,35 @@
 
 <mapper namespace="StudentMapper">
 
-    <resultMap type="test.Student" id="r_student">  
+    <resultMap type="org.rex.db.test.Student" id="rexdb_test_student">  
         <id property="studentId" column="student_id"/>  
         <result property="birthTime" column="birth_time"/>  
         <result property="enrollmentTime" column="enrollment_time"/>  
     </resultMap>  
     
     
-	<select id="getList" resultType="test.Student" resultMap="r_student">
-		SELECT * FROM r_student
+	<select id="getList" resultType="org.rex.db.test.Student" resultMap="rexdb_test_student">
+		SELECT * FROM rexdb_test_student
 	</select>
 	
-	<select id="getMapList" resultType="java.util.HashMap" resultMap="r_student">
-		SELECT * FROM r_student
+	<select id="getMapList" resultType="java.util.HashMap" resultMap="rexdb_test_student">
+		SELECT * FROM rexdb_test_student
 	</select>
 
-	<insert id="insert" parameterType="test.Student">
-		INSERT INTO r_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly)
+	<insert id="insert" parameterType="org.rex.db.test.Student">
+		INSERT INTO rexdb_test_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly)
 		VALUES (#{studentId},#{name},#{sex},#{birthday},#{birthTime},#{enrollmentTime},#{major},#{photo},#{remark},#{readonly})
 	</insert>
 
 <!-- 	<insert id="batch" parameterType="java.util.List">
-		INSERT INTO r_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly) VALUES
+		INSERT INTO rexdb_test_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly) VALUES
 		<foreach collection="list" item="item" index="index" separator=",">
 			(#{item.studentId},#{item.name},#{item.sex},#{item.birthday},#{item.birthTime},#{item.enrollmentTime},#{item.major},#{item.photo},#{item.remark},#{item.readonly})
 		</foreach>
 	</insert>  -->
 
 	<delete id="delete">
-		DELETE FROM r_student
+		DELETE FROM rexdb_test_student
 	</delete>
 	
 <!--<select id="findById" parameterType="int" resultType="User">
