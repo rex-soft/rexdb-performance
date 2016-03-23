@@ -2,6 +2,8 @@ package org.rex.db.test;
 
 import java.lang.reflect.Method;
 
+import org.rex.DB;
+import org.rex.db.dialect.Dialect;
 import org.rex.db.test.api.Base;
 import org.rex.db.test.api.TestBatchUpdate;
 import org.rex.db.test.api.TestCall;
@@ -40,7 +42,12 @@ public class RunApiTest implements Runner{
 	
 	@Override
 	public void run() throws Exception {
-		System.out.println("===================== running rexdb API test ======================");
+		Dialect dialect = DB.getDialect();
+		if(dialect == null)
+			System.out.println("Does not support your database.");
+		
+		String dbName = dialect.getName();
+		System.out.println("================== running rexdb API test for dbName ===================");
 		
 		testMethods(new TestGet());
 		testMethods(new TestGetMap());
@@ -49,7 +56,11 @@ public class RunApiTest implements Runner{
 		testMethods(new TestUpdate());
 		testMethods(new TestBatchUpdate());
 		testMethods(new TestTransaction());
-		testMethods(new TestCall());
+		
+		if("H2".equals(dbName) || "POSTGRESQL".equals(dbName)){
+			System.out.println("--------------------- ignore DB.call test ------------------");
+		}else
+			testMethods(new TestCall());
 	}
 	
 	

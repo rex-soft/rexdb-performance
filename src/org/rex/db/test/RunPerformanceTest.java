@@ -167,15 +167,20 @@ public class RunPerformanceTest implements Runner{
 						df.format(timeH) + "      |   " + df.format(timeM) + "    |   " + df.format(timeS) + "    |");
 		}
 		
-		System.out.println("| AVG  |     " + avg(timeRs, loop) + "     |    " + avg(timeJs, loop) + "     |      " + 
-				avg(timeHs, loop) + "      |   " + avg(timeMs, loop) + "    |" + avg(timeSs, loop) + "    |");
+		System.out.println("|  AVG |     " + avg(timeRs) + "     |    " + avg(timeJs) + "     |      " + 
+				avg(timeHs) + "      |   " + avg(timeMs) + "    |   " + avg(timeSs) + "    |");
 		
-		return new double[]{new Double(avg(timeRs, loop)), new Double(avg(timeJs, loop)), new Double(avg(timeHs, loop)), 
-				new Double(avg(timeMs, loop)), new Double(avg(timeSs, loop))};
+		return new double[]{new Double(avg(timeRs)), new Double(avg(timeJs)), new Double(avg(timeHs)), 
+				new Double(avg(timeMs)), new Double(avg(timeSs))};
 	}
 	
-	private static String avg(List<Double> times, int loop){
-		Collections.sort(times);
+	private static String avg(List<Double> times){
+		if(times.size() >= 5){
+			Collections.sort(times);
+			times.remove(0);
+			times.remove(times.size() - 1);
+		}
+		
 		double count = 0;
 		for (int i = 0; i < times.size(); i++) {
 			count += times.get(i);
@@ -183,7 +188,7 @@ public class RunPerformanceTest implements Runner{
 		
 		if(count == 0) return "0";
 		
-		return df.format(count/loop);
+		return df.format(count/times.size());
 	}
 	
 	//set rexdb dynamicClass setting
@@ -236,10 +241,14 @@ public class RunPerformanceTest implements Runner{
 		
 		//--------fast test
 		deleteRows();
-		int loop = fast ? 10 : 50;
+		int loop = fast ? 10 : 5;
 		int der = fast ? 5 : 1;
 			
 		System.out.println("===================== running performance test ======================");
+		
+		if(loop >= 5){
+			System.out.println("* The highest and lowest scores are scratched.");
+		}
 		
 		//test insert
 		results.put("insert", opers("insert", OPER_INSERT, loop, 500/der));

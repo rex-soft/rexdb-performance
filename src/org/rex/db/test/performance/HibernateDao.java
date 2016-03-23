@@ -39,8 +39,6 @@ public class HibernateDao extends Dao{
 				}
 			}
 			
-			System.out.println(prop);
-			
 			Configuration configuration = new Configuration().addProperties(prop);
 			configuration.addInputStream(HibernateDao.class.getResourceAsStream("/Student.hbm.xml"));
 			ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
