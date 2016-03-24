@@ -1,4 +1,4 @@
-drop TABLE IF EXISTS rexdb_test_student;$$
+drop TABLE IF EXISTS rexdb_test_student;
 
 $$
 
