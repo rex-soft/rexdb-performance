@@ -42,12 +42,17 @@ public class TestBatchUpdate extends Base{
 	 * by Array
 	 */
 	public int[] testBatchUpdateByObjectArray() throws Exception{
+		try{
 		String sql = "insert into rexdb_test_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly) values (?,?,?,?,?,?,?,?,?,?)";
 		int[] i = DB.batchUpdate(sql, super.newArrays(3));
 		if(!Arrays.equals(i, new int[]{1, 1, 1}))
 			throw new Exception("update seems didn't work.");
 		
 		return i;
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
 	}
 	
 	/**

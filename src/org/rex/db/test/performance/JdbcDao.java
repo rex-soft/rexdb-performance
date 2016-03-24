@@ -26,8 +26,7 @@ public class JdbcDao extends Dao{
 		bds.setUsername(prop.getProperty("username"));
 		bds.setPassword(prop.getProperty("password"));
 	}
-
-
+	
 	@Override
 	public int insert() throws Exception {
 		String sql = "INSERT INTO rexdb_test_student(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";

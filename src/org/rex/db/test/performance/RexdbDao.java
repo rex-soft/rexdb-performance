@@ -68,6 +68,7 @@ public class RexdbDao extends Dao {
 	// --------------MAIN TEST
 	public static void main(String[] args) throws Exception {
 		Dao dao = new RexdbDao();
+		dao.delete();
 		System.out.println(dao.insert());
 		System.out.println(dao.getList());
 		System.out.println(dao.delete());

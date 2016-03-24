@@ -28,5 +28,7 @@
 	<classpathentry kind="lib" path="lib/spring-expression-4.2.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/h2-1.4.190.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-9.4.1208.jre6.jar"/>
+	<classpathentry kind="lib" path="lib/derbyclient.jar"/>
+	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
