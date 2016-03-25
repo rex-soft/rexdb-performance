@@ -57,7 +57,7 @@ public class RunApiTest implements Runner{
 		testMethods(new TestBatchUpdate());
 		testMethods(new TestTransaction());
 		
-		if("H2".equals(dbName) || "POSTGRESQL".equals(dbName) || "DERBY".equals(dbName)|| "HSQLDB".equals(dbName)){
+		if(!"MYSQL".equals(dbName)){
 			System.out.println("--------------------- ignore DB.call test ------------------");
 		}else
 			testMethods(new TestCall());
