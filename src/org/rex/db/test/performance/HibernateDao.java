@@ -15,6 +15,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
 public class HibernateDao extends Dao{
+	
 	static SessionFactory cf = null;
 	
 	static Session getSession() throws Exception {

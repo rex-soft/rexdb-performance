@@ -1,10 +1,8 @@
 package org.rex.db.test.api;
 
 import java.util.Arrays;
-import java.util.Date;
 
 import org.rex.DB;
-import org.rex.db.Ps;
 import org.rex.db.exception.DBException;
 
 /**
@@ -32,7 +30,8 @@ public class TestBatchUpdate extends Base{
 	public int[] testBatchUpdateByPs() throws Exception{
 		String sql = "insert into rexdb_test_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly) values (?,?,?,?,?,?,?,?,?,?)";
 		int[] i = DB.batchUpdate(sql, super.newPss(3));
-		if(!Arrays.equals(i, new int[]{1, 1, 1}))
+		
+		if(!Arrays.equals(i, new int[]{1, 1, 1}) && !Arrays.equals(i, new int[]{-2, -2, -2}))
 			throw new Exception("update seems didn't work.");
 		
 		return i;
@@ -45,7 +44,7 @@ public class TestBatchUpdate extends Base{
 		try{
 		String sql = "insert into rexdb_test_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly) values (?,?,?,?,?,?,?,?,?,?)";
 		int[] i = DB.batchUpdate(sql, super.newArrays(3));
-		if(!Arrays.equals(i, new int[]{1, 1, 1}))
+		if(!Arrays.equals(i, new int[]{1, 1, 1}) && !Arrays.equals(i, new int[]{-2, -2, -2}))
 			throw new Exception("update seems didn't work.");
 		
 		return i;
@@ -62,7 +61,7 @@ public class TestBatchUpdate extends Base{
 		String sql = "insert into rexdb_test_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly) "
 				+ "values (#{studentId}, #{name}, #{sex}, #{birthday}, #{birthTime}, #{enrollmentTime}, #{major}, #{photo}, #{remark}, #{readonly})";
 		int[] i = DB.batchUpdate(sql, super.newStudents(3));
-		if(!Arrays.equals(i, new int[]{1, 1, 1}))
+		if(!Arrays.equals(i, new int[]{1, 1, 1}) && !Arrays.equals(i, new int[]{-2, -2, -2}))
 			throw new Exception("update seems didn't work.");
 		
 		return i;
@@ -75,7 +74,7 @@ public class TestBatchUpdate extends Base{
 		String sql = "insert into rexdb_test_student(student_id, name, sex, birthday, birth_time, enrollment_time, major, photo, remark, readonly) "
 				+ "values (#{studentId}, #{name}, #{sex}, #{birthday}, #{birthTime}, #{enrollmentTime}, #{major}, #{photo}, #{remark}, #{readonly})";
 		int[] i = DB.batchUpdate(sql, super.newStudentMaps(3));
-		if(!Arrays.equals(i, new int[]{1, 1, 1}))
+		if(!Arrays.equals(i, new int[]{1, 1, 1}) && !Arrays.equals(i, new int[]{-2, -2, -2}))
 			throw new Exception("update seems didn't work.");
 		
 		return i;
@@ -88,7 +87,7 @@ public class TestBatchUpdate extends Base{
 		super.deleteAll();
 		testBatchUpdateByMap();
 		int[] i = DB.batchUpdate(new String[]{"delete from rexdb_test_student", "delete from rexdb_test_student"});
-		if(!Arrays.equals(i, new int[]{3, 0}))
+		if(!Arrays.equals(i, new int[]{3, 0}) && !Arrays.equals(i, new int[]{-2, -2}))
 			throw new Exception("update seems didn't work.");
 		
 		return i;

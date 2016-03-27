@@ -107,7 +107,6 @@ public class RunPerformanceTest implements Runner{
 	
 	public long oper(int operation, Dao dao, int rows) throws Exception{
 		long start = System.currentTimeMillis();
-		
 		if(OPER_BATCH == operation){
 			dao.batchInsert(rows);
 		}else if(OPER_BATCH_PS == operation){
@@ -145,8 +144,8 @@ public class RunPerformanceTest implements Runner{
 			double h = 0, m = 0, r = 0, j = 0, s = 0;
 			double timeH, timeM, timeJ, timeR, timeS;
 			
-			if(rexdbEnabled) r = oper(operation, rexdbDao, rows);
-			if(jdbcEnabled) j = oper(operation, jdbcDao, rows);
+		
+			if(jdbcEnabled) j = oper(operation, jdbcDao, rows);	if(rexdbEnabled) r = oper(operation, rexdbDao, rows);
 			if(hibernateEnabled) h = oper(operation, hibernateDao, rows);
 			if(mybatisEnabled) m = oper(operation, mybatisDao, rows);
 			if(springEnabled) s = oper(operation, springDao, rows);

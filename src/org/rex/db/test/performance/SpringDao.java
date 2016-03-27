@@ -10,6 +10,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class SpringDao extends Dao{
 	
@@ -18,6 +22,10 @@ public class SpringDao extends Dao{
 	
 	public static SpringDao getDao(){
 		return (SpringDao)ctx.getBean("studentDao");
+	}
+	
+	public static DataSourceTransactionManager getTransactionManager(){
+		return (DataSourceTransactionManager)ctx.getBean("transactionManager");
 	}
 	
 	private JdbcTemplate template;
@@ -86,27 +94,36 @@ public class SpringDao extends Dao{
 		return template.update("DELETE FROM rexdb_test_student");
 	}
 
-	public int[] batchInsert(int rows) throws Exception {
-		String sql = "INSERT INTO rexdb_test_student(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
-		List<Object[]> values = new ArrayList<Object[]>();
-		for (int i = 0; i < rows; i++) {
-			Student stu = newStudent();
-			Object[] v = new Object[]{
-				stu.getStudentId(),
-				stu.getName(),
-				stu.getSex(),
-				new java.sql.Timestamp(stu.getBirthday().getTime()),
-				new java.sql.Timestamp(stu.getBirthTime().getTime()),
-				new java.sql.Timestamp(stu.getEnrollmentTime().getTime()),
-				stu.getMajor(),
-				stu.getPhoto(),
-				stu.getRemark(),
-				stu.getReadonly()
-			};
-			values.add(v);
-		}
+	public int[] batchInsert(final int rows) throws Exception {
 		
-		return template.batchUpdate(sql, values);
+		 TransactionTemplate transactionTemplate = new TransactionTemplate(getTransactionManager()); 
+		 return transactionTemplate.execute(new TransactionCallback<int[]>(){
+
+			@Override
+			public int[] doInTransaction(TransactionStatus arg0) {
+				String sql = "INSERT INTO rexdb_test_student(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
+				List<Object[]> values = new ArrayList<Object[]>();
+				for (int i = 0; i < rows; i++) {
+					Student stu = newStudent();
+					Object[] v = new Object[]{
+						stu.getStudentId(),
+						stu.getName(),
+						stu.getSex(),
+						new java.sql.Timestamp(stu.getBirthday().getTime()),
+						new java.sql.Timestamp(stu.getBirthTime().getTime()),
+						new java.sql.Timestamp(stu.getEnrollmentTime().getTime()),
+						stu.getMajor(),
+						stu.getPhoto(),
+						stu.getRemark(),
+						stu.getReadonly()
+					};
+					values.add(v);
+				}
+				return template.batchUpdate(sql, values);
+			}
+			 
+		 });
+		
 	}
 	
 	@Override

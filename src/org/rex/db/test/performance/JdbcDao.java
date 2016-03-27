@@ -142,14 +142,20 @@ public class JdbcDao extends Dao{
 	@Override
 	public int[] batchInsert(int rows) throws Exception {
 		String sql = "INSERT INTO rexdb_test_student(STUDENT_ID, NAME, SEX, BIRTHDAY, BIRTH_TIME, ENROLLMENT_TIME, MAJOR, PHOTO, REMARK, READONLY) VALUES (?,?,?,?,?,?,?,?,?,?)";
+		Student[] students = new Student[rows];
+		for (int i = 0; i < rows; i++) {
+			students[i] = super.newStudent();
+		}
+		
 		Connection conn = bds.getConnection();
 		PreparedStatement ps = null;
 		try {
+			conn.setAutoCommit(false);
 			ps = conn.prepareStatement(sql);
-			for (int j = 0; j < rows; j++) {
+			for (int j = 0; j < students.length; j++) {
 				
-				Student stu  = super.newStudent();
-				
+				Student stu  = students[j];
+
 				ps.setLong(1, stu.getStudentId());
 				ps.setString(2, stu.getName());
 				ps.setObject(3, stu.getSex());
@@ -163,7 +169,12 @@ public class JdbcDao extends Dao{
 				
 				ps.addBatch();
 			}
-			return ps.executeBatch();
+			int[] r = ps.executeBatch();
+			conn.commit();
+			return r;
+		}catch(Exception e){
+			conn.rollback();
+			throw e;
 		}finally{
 			ps.close();
 			conn.close();

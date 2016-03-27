@@ -30,7 +30,13 @@ public class RexdbDao extends Dao {
 		for (int i = 0; i < rows; i++) {
 			students[i] = super.newStudent();
 		}
-		return DB.batchUpdate(sql, students);
+		try{
+			DB.beginTransaction();
+			return DB.batchUpdate(sql, students);
+		
+		}finally{
+			DB.commit();
+		}
 	}
 	
 	@Override

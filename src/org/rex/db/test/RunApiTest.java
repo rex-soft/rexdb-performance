@@ -34,6 +34,7 @@ public class RunApiTest implements Runner{
 					method.invoke(test, null);
 					System.out.println("--" + api + ": passed");
 				}catch(Exception e){
+					e.printStackTrace();
 					System.out.println("--" + api + ": faild, message: " + e.getCause().getMessage());
 				}
 			}
