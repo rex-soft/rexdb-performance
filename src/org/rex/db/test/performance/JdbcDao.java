@@ -35,17 +35,17 @@ public class JdbcDao extends Dao{
 		try {
 			ps = conn.prepareStatement(sql);
 			
-			Student stu  = super.newStudent();
+			Student stu  = newStudent();
 			ps.setLong(1, stu.getStudentId());
 			ps.setString(2, stu.getName());
-			ps.setObject(3, stu.getSex());
-			ps.setObject(4, new java.sql.Timestamp(stu.getBirthday().getTime()));
-			ps.setObject(5, new java.sql.Timestamp(stu.getBirthTime().getTime()));
-			ps.setObject(6, new java.sql.Timestamp(stu.getEnrollmentTime().getTime()));
-			ps.setObject(7, stu.getMajor());
-			ps.setObject(8, stu.getPhoto());
-			ps.setObject(9, stu.getRemark());
-			ps.setObject(10, stu.getReadonly());
+			ps.setInt(3, stu.getSex());
+			ps.setTimestamp(4, new java.sql.Timestamp(stu.getBirthday().getTime()));
+			ps.setTimestamp(5, new java.sql.Timestamp(stu.getBirthTime().getTime()));
+			ps.setTimestamp(6, new java.sql.Timestamp(stu.getEnrollmentTime().getTime()));
+			ps.setInt(7, stu.getMajor());
+			ps.setBytes(8, stu.getPhoto());
+			ps.setString(9, stu.getRemark());
+			ps.setInt(10, stu.getReadonly());
 			
 			return ps.executeUpdate();
 		}finally{

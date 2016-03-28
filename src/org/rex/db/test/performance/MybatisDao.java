@@ -3,6 +3,7 @@ package org.rex.db.test.performance;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.derby.tools.sysinfo;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;

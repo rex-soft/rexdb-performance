@@ -130,22 +130,36 @@ public class RunPerformanceTest implements Runner{
 	
 	//test insert performance
 	public double[] opers(String testName, int operation, int loop, int rows) throws Exception{
+		List<Double> timeRs = new ArrayList<Double>(),
+				timeJs = new ArrayList<Double>(),
+				timeHs = new ArrayList<Double>(),
+				timeMs = new ArrayList<Double>(),
+				timeSs = new ArrayList<Double>();
+		
 		System.out.println("-------------- testing "+testName+" (Affected Rows per second) ------------");
 		System.out.println("|      |     rexdb     |     jdbc     |    hibernate    |  mybatis   |  spring   |");
 		System.out.println("| ---- | ------------- | ------------ | --------------- | ---------- | --------- |");
 		
-		List<Double> timeRs = new ArrayList<Double>(),
-					timeJs = new ArrayList<Double>(),
-					timeHs = new ArrayList<Double>(),
-					timeMs = new ArrayList<Double>(),
-					timeSs = new ArrayList<Double>();
+		System.out.print("warming up testing "+testName+"...");
+		
+		for (int i = 0; i < 5; i++) {
+			if(rexdbEnabled) oper(operation, rexdbDao, rows);
+			if(jdbcEnabled) oper(operation, jdbcDao, rows);	
+			if(hibernateEnabled) oper(operation, hibernateDao, rows);
+			if(mybatisEnabled) oper(operation, mybatisDao, rows);
+			if(springEnabled) oper(operation, springDao, rows);
+			
+			System.out.print("...");
+		}
+		System.out.println();
+		
 		
 		for (int i = 0; i < loop; i++) {
 			double h = 0, m = 0, r = 0, j = 0, s = 0;
 			double timeH, timeM, timeJ, timeR, timeS;
 			
-		
-			if(jdbcEnabled) j = oper(operation, jdbcDao, rows);	if(rexdbEnabled) r = oper(operation, rexdbDao, rows);
+			if(rexdbEnabled) r = oper(operation, rexdbDao, rows);
+			if(jdbcEnabled) j = oper(operation, jdbcDao, rows);	
 			if(hibernateEnabled) h = oper(operation, hibernateDao, rows);
 			if(mybatisEnabled) m = oper(operation, mybatisDao, rows);
 			if(springEnabled) s = oper(operation, springDao, rows);
@@ -174,11 +188,11 @@ public class RunPerformanceTest implements Runner{
 	}
 	
 	private static String avg(List<Double> times){
-		if(times.size() >= 5){
-			Collections.sort(times);
-			times.remove(0);
-			times.remove(times.size() - 1);
-		}
+//		if(times.size() >= 5){
+//			Collections.sort(times);
+//			times.remove(0);
+//			times.remove(times.size() - 1);
+//		}
 		
 		double count = 0;
 		for (int i = 0; i < times.size(); i++) {
@@ -240,14 +254,14 @@ public class RunPerformanceTest implements Runner{
 		
 		//--------fast test
 		deleteRows();
-		int loop = fast ? 10 : 5;
+		int loop = fast ? 10 : 20;
 		int der = fast ? 5 : 1;
 			
 		System.out.println("===================== running performance test ======================");
 		
-		if(loop >= 5){
-			System.out.println("* The highest and lowest scores are scratched.");
-		}
+//		if(loop >= 5){
+//			System.out.println("* The highest and lowest scores are scratched.");
+//		}
 		
 		//test insert
 		results.put("insert", opers("insert", OPER_INSERT, loop, 500/der));

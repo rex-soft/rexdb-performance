@@ -20,10 +20,6 @@
 				<property name="url" value="${url}" />
 				<property name="username" value="${username}" />
 				<property name="password" value="${password}" />
-				<property name="initialSize" value="1" />
-				<property name="maxActive" value="10" />
-				<property name="maxIdle" value="10" />
-				<property name="poolPreparedStatements" value="true" />
 			</dataSource>
 		</environment>
 	</environments>

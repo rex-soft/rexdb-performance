@@ -4,7 +4,7 @@
 	<properties path="conn.properties"></properties>
 	<settings>
 		<property name="lang" value="en"/>
-		<property name="nolog" value="false" />
+		<property name="nolog" value="true" />
 		<property name="validateSql" value="false" />
  		<property name="checkWarnings" value="false" />
 		<property name="queryTimeout" value="-1" />
