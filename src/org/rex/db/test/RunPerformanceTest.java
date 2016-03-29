@@ -96,6 +96,7 @@ public class RunPerformanceTest implements Runner{
 	
 	//remove all rows
 	public void deleteRows() throws Exception{
+		System.out.println("------------------------- deleting all rows --------------------------");
 		rexdbDao.delete();
 	}
 	
@@ -254,7 +255,7 @@ public class RunPerformanceTest implements Runner{
 		
 		//--------fast test
 		deleteRows();
-		int loop = fast ? 10 : 20;
+		int loop = fast ? 10 : 50;
 		int der = fast ? 5 : 1;
 			
 		System.out.println("===================== running performance test ======================");

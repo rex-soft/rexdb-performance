@@ -10,8 +10,8 @@ CREATE TABLE rexdb_test_student (
 	birth_time time NOT NULL,
 	enrollment_time datetime NOT NULL,
 	major smallint NOT NULL,
-	photo bit,
-	remark text,
+	photo image,
+	remark varchar(max),
 	readonly smallint NOT NULL,
 	PRIMARY KEY (student_id)
 );
