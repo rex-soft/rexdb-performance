@@ -255,7 +255,7 @@ public class RunPerformanceTest implements Runner{
 		
 		//--------fast test
 		deleteRows();
-		int loop = fast ? 10 : 50;
+		int loop = fast ? 30 : 50;
 		int der = fast ? 5 : 1;
 			
 		System.out.println("===================== running performance test ======================");
