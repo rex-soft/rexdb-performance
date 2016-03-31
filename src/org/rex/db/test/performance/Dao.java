@@ -70,6 +70,9 @@ public abstract class Dao {
 		student.setEnrollmentTime(new Date());
 		student.setMajor(10);
 		student.setReadonly(1);
+		student.setPhoto(new byte[]{1,2,3});
+		student.setRemark("This is Jim's infomation.");
+		
 		return student;
 	}
 	

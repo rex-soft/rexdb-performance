@@ -281,7 +281,7 @@ public class RunPerformanceTest implements Runner{
 		deleteRows();
 		
 		//test get list
-		initRows(50000/der);
+		initRows(10000/der);
 		results.put("getList", opers("getList", OPER_QUERY_LIST, loop, 50000/der));
 		setRexdbDynamicClass(false);
 		results.put("getList-disableDynamicClass", opers("getList-disableDynamic", OPER_QUERY_LIST, loop, 50000/der));

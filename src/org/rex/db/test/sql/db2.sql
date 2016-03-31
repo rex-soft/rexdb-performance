@@ -2,7 +2,7 @@ drop TABLE rexdb_test_student;
 
 $$
 
-CREATE TABLE rexdb_test_student (
+CREATE TABLE rexdb_test_student(
 	student_id int NOT NULL,
 	name varchar(30) NOT NULL,
 	sex smallint NOT NULL,
@@ -15,5 +15,6 @@ CREATE TABLE rexdb_test_student (
 	readonly smallint NOT NULL,
 	PRIMARY KEY (student_id)
 );
+
 
 $$
