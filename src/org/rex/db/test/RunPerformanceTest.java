@@ -255,7 +255,7 @@ public class RunPerformanceTest implements Runner{
 		
 		//--------fast test
 		deleteRows();
-		int loop = fast ? 30 : 50;
+		int loop = fast ? 10 : 25;
 		int der = fast ? 5 : 1;
 			
 		System.out.println("===================== running performance test ======================");
@@ -265,11 +265,11 @@ public class RunPerformanceTest implements Runner{
 //		}
 		
 		//test insert
-		results.put("insert", opers("insert", OPER_INSERT, loop, 500/der));
-		deleteRows();
-		
+//		results.put("insert", opers("insert", OPER_INSERT, loop, 1000/der));
+//		deleteRows();
+//		
 		//test insert Ps
-		results.put("insertPs", opers("insertPs", OPER_INSERT_PS, loop, 500/der));
+		results.put("insertPs", opers("insertPs", OPER_INSERT_PS, loop, 1000/der));
 		deleteRows();
 		
 		//test batch insert

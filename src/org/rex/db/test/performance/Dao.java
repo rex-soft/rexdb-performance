@@ -88,8 +88,8 @@ public abstract class Dao {
 		ps.add(new Date());
 		ps.add(new Date());
 		ps.add(10);
-		ps.addNull();
-		ps.addNull();
+		ps.add(new byte[]{1,2,3});
+		ps.add("This is Jim's infomation.");
 		ps.add(1);
 		return ps;
 	}
