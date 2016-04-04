@@ -1,5 +1,7 @@
 package org.rex.db.test.performance;
 
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -72,15 +74,33 @@ public class JdbcDao extends Dao{
 			rs = ps.executeQuery();
 			while(rs.next()){
 				Student student = new Student();
-				student.setStudentId(rs.getInt("STUDENT_ID"));
+				student.setStudentId(rs.getLong("STUDENT_ID"));
 				student.setName(rs.getString("NAME"));
 				student.setSex(rs.getInt("SEX"));
 				student.setBirthday(rs.getDate("BIRTHDAY"));
 				student.setBirthTime(rs.getTime("BIRTH_TIME"));
 				student.setEnrollmentTime(rs.getTimestamp("ENROLLMENT_TIME"));
 				student.setMajor(rs.getInt("MAJOR"));
-				student.setPhoto(rs.getBytes("PHOTO"));
-				student.setRemark(rs.getString("REMARK"));
+				
+				if(super.isPostgreSql()){
+					student.setPhoto(rs.getBytes("PHOTO"));
+					student.setRemark(rs.getString("REMARK"));
+				}else{
+				    Blob blob = rs.getBlob("PHOTO");
+				    byte[] photo = null;
+				    if (null != blob) {
+				    	photo = blob.getBytes(1, (int) blob.length());
+				    }
+				    
+				    String remark = null;
+				    Clob clob = rs.getClob("REMARK");
+				    if (clob != null) {
+				      int size = (int) clob.length();
+				      remark = clob.getSubString(1, size);
+				    }
+					student.setPhoto(photo);
+					student.setRemark(remark);
+				}
 				student.setReadonly(rs.getInt("READONLY"));
 				list.add(student);
 			}
@@ -106,15 +126,34 @@ public class JdbcDao extends Dao{
 			rs = ps.executeQuery();
 			while(rs.next()){
 				Map student = new HashMap();
-				student.put("studentId", rs.getInt("STUDENT_ID"));
+				student.put("studentId", rs.getLong("STUDENT_ID"));
 				student.put("name", rs.getString("NAME"));
 				student.put("sex", rs.getInt("SEX"));
 				student.put("birthday", rs.getDate("BIRTHDAY"));
 				student.put("birthTime", rs.getTime("BIRTH_TIME"));
 				student.put("enrollmentTime", rs.getTimestamp("ENROLLMENT_TIME"));
 				student.put("major", rs.getInt("MAJOR"));
-				student.put("photo", rs.getBytes("PHOTO"));
-				student.put("remark", rs.getString("REMARK"));
+				
+				if(super.isPostgreSql()){
+					student.put("photo", rs.getBytes("PHOTO"));
+					student.put("remark", rs.getString("REMARK"));
+				}else{
+				    Blob blob = rs.getBlob("PHOTO");
+				    byte[] photo = null;
+				    if (null != blob) {
+				    	photo = blob.getBytes(1, (int) blob.length());
+				    }
+				    
+				    String remark = null;
+				    Clob clob = rs.getClob("REMARK");
+				    if (clob != null) {
+				      int size = (int) clob.length();
+				      remark = clob.getSubString(1, size);
+				    }
+					student.put("photo", photo);
+					student.put("remark", remark);
+				}
+				
 				student.put("readonly", rs.getInt("READONLY"));
 				list.add(student);
 			}

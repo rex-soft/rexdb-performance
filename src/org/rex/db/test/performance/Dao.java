@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.rex.DB;
 import org.rex.db.Ps;
+import org.rex.db.exception.DBException;
 import org.rex.db.test.Student;
 
 public abstract class Dao {
@@ -110,5 +112,37 @@ public abstract class Dao {
 			} catch (IOException e) {
 			}
 		}
+	}
+	
+	static int isPostgreSql = -1;
+	static int isH2 = -1;
+	protected static boolean isPostgreSql(){
+		if(isPostgreSql == -1){
+			try {
+				if("POSTGRESQL".equals(DB.getDialect().getName()))
+					isPostgreSql=1;
+				else
+					isPostgreSql=0;
+			} catch (DBException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return isPostgreSql == 1;
+	}
+	
+	protected static boolean isH2(){
+		if(isH2 == -1){
+			try {
+				if("H2".equals(DB.getDialect().getName()))
+					isH2=1;
+				else
+					isH2=0;
+			} catch (DBException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return isH2 == 1;
 	}
 }

@@ -2,7 +2,6 @@ package org.rex.db.test;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,7 +22,7 @@ public class RunPerformanceTest implements Runner{
 	
 	static DecimalFormat df =new DecimalFormat("#.00");  
 	
-	private boolean fast = false;
+	private int fast = 1, loop = 50;
 	
 	//--operation
 	public static final int OPER_INSERT = 0;
@@ -54,14 +53,12 @@ public class RunPerformanceTest implements Runner{
 		testFrameworks();
 	}
 	
-	public RunPerformanceTest(boolean fast) throws Exception{
+	public RunPerformanceTest(int fast, int loop) throws Exception{
 		this();
-		setFast(fast);
+		this.fast = fast;
+		this.loop = loop;
 	}
 
-	public void setFast(boolean fast) {
-		this.fast = fast;
-	}
 
 	//test framework
 	public void testFrameworks() throws Exception{
@@ -189,12 +186,6 @@ public class RunPerformanceTest implements Runner{
 	}
 	
 	private static String avg(List<Double> times){
-//		if(times.size() >= 5){
-//			Collections.sort(times);
-//			times.remove(0);
-//			times.remove(times.size() - 1);
-//		}
-		
 		double count = 0;
 		for (int i = 0; i < times.size(); i++) {
 			count += times.get(i);
@@ -255,38 +246,32 @@ public class RunPerformanceTest implements Runner{
 		
 		//--------fast test
 		deleteRows();
-		int loop = fast ? 10 : 25;
-		int der = fast ? 5 : 1;
 			
 		System.out.println("===================== running performance test ======================");
 		
-//		if(loop >= 5){
-//			System.out.println("* The highest and lowest scores are scratched.");
-//		}
-		
 		//test insert
-//		results.put("insert", opers("insert", OPER_INSERT, loop, 1000/der));
-//		deleteRows();
-//		
+		results.put("insert", opers("insert", OPER_INSERT, loop, 500/fast));
+		deleteRows();
+		
 		//test insert Ps
-		results.put("insertPs", opers("insertPs", OPER_INSERT_PS, loop, 1000/der));
+		results.put("insertPs", opers("insertPs", OPER_INSERT_PS, loop, 500/fast));
 		deleteRows();
 		
 		//test batch insert
-		results.put("batchInsert", opers("batchInsert", OPER_BATCH, loop, 50000/der));
+		results.put("batchInsert", opers("batchInsert", OPER_BATCH, loop, 5000/fast));
 		deleteRows();
 		
 		//test batch insert Ps
-		results.put("batchInsertPs", opers("batchInsertPs", OPER_BATCH_PS, loop, 50000/der));
+		results.put("batchInsertPs", opers("batchInsertPs", OPER_BATCH_PS, loop, 5000/fast));
 		deleteRows();
 		
 		//test get list
-		initRows(10000/der);
-		results.put("getList", opers("getList", OPER_QUERY_LIST, loop, 50000/der));
+		initRows(5000/fast);
+		results.put("getList", opers("getList", OPER_QUERY_LIST, loop, 50000/fast));
 		setRexdbDynamicClass(false);
-		results.put("getList-disableDynamicClass", opers("getList-disableDynamic", OPER_QUERY_LIST, loop, 50000/der));
+		results.put("getList-disableDynamicClass", opers("getList-disableDynamic", OPER_QUERY_LIST, loop, 50000/fast));
 		setRexdbDynamicClass(true);
-		results.put("getMapList", opers("getMapList", OPER_QUERY_MAPLIST, loop, 50000/der));
+		results.put("getMapList", opers("getMapList", OPER_QUERY_MAPLIST, loop, 50000/fast));
 		
 		deleteRows();
 		
@@ -297,15 +282,7 @@ public class RunPerformanceTest implements Runner{
 	
 	//----------START TESTING
 	public static void main(String[] args) throws Exception {
-		boolean fast = false;
-		for (int i = 0; i < args.length; i++) {
-			if("fast".equals(args[i]))
-				fast = true;
-		}
-		
-		RunPerformanceTest test = new RunPerformanceTest();
-		test.fast = fast;
-		
+		RunPerformanceTest test = new RunPerformanceTest(1, 50);
 		test.run();
 	}
 }

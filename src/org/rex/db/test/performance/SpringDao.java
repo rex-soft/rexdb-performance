@@ -1,5 +1,7 @@
 package org.rex.db.test.performance;
 
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -50,8 +52,26 @@ public class SpringDao extends Dao{
 			student.setBirthTime(rs.getTime("BIRTH_TIME"));
 			student.setEnrollmentTime(rs.getTimestamp("ENROLLMENT_TIME"));
 			student.setMajor(rs.getInt("MAJOR"));
-			student.setPhoto(rs.getBytes("PHOTO"));
-			student.setRemark(rs.getString("REMARK"));
+			
+			if(isPostgreSql()){
+				student.setPhoto(rs.getBytes("PHOTO"));
+				student.setRemark(rs.getString("REMARK"));
+			}else{
+			    Blob blob = rs.getBlob("PHOTO");
+			    byte[] photo = null;
+			    if (null != blob) {
+			    	photo = blob.getBytes(1, (int) blob.length());
+			    }
+			    
+			    String remark = null;
+			    Clob clob = rs.getClob("REMARK");
+			    if (clob != null) {
+			      int size = (int) clob.length();
+			      remark = clob.getSubString(1, size);
+			    }
+				student.setPhoto(photo);
+				student.setRemark(remark);
+			}
 			student.setReadonly(rs.getInt("READONLY"));
 			
 			return student;

@@ -48,7 +48,7 @@ public class RunApiTest implements Runner{
 			System.out.println("Does not support your database.");
 		
 		String dbName = dialect.getName();
-		System.out.println("================== running rexdb API test for dbName ===================");
+		System.out.println("================== running Rexdb API test for "+dbName+" ===================");
 		
 		testMethods(new TestGet());
 		testMethods(new TestGetMap());
