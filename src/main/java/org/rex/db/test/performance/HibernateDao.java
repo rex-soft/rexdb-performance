@@ -21,8 +21,8 @@ public class HibernateDao extends Dao{
 	static Session getSession() throws Exception {
 		if (cf == null) {
 
-			Properties conn = loadConnProperties("/conn.properties");
-			Properties prop = loadConnProperties("/hibernate.properties");
+			Properties conn = loadConnProperties("conn.properties");
+			Properties prop = loadConnProperties("hibernate.properties");
 			
 			for (Iterator iterator = prop.entrySet().iterator(); iterator.hasNext();) {
 				Map.Entry entry = (Map.Entry) iterator.next();
@@ -41,7 +41,7 @@ public class HibernateDao extends Dao{
 			}
 			
 			Configuration configuration = new Configuration().addProperties(prop);
-			configuration.addInputStream(HibernateDao.class.getResourceAsStream("/Student.hbm.xml"));
+			configuration.addInputStream(HibernateDao.class.getResourceAsStream("/org/rex/db/test/Student.hbm.xml"));
 			ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 			cf = configuration.buildSessionFactory(serviceRegistry);
 		}

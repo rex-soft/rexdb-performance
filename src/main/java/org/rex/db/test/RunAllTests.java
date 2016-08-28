@@ -7,7 +7,7 @@ public class RunAllTests {
 
 	//fast = 10
 	public static void main(String[] args) throws Exception {
-		int speed = 1, loop = 50;
+		int speed = 10, loop = 30;
 		
 		for (int i = 0; i < args.length; i++) {
 			

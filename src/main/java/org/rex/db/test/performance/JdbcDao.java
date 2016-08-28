@@ -20,7 +20,7 @@ public class JdbcDao extends Dao{
 	BasicDataSource bds = null;
 	
 	public JdbcDao(){
-		Properties prop = loadConnProperties("/conn.properties");
+		Properties prop = loadConnProperties("conn.properties");
 		
 		bds = new BasicDataSource();
 		bds.setDriverClassName(prop.getProperty("driverClassName"));

@@ -97,7 +97,7 @@ public abstract class Dao {
 	}
 	
 	protected static Properties loadConnProperties(String resources) {
-		InputStream inputstream = Dao.class.getResourceAsStream(resources);
+		InputStream inputstream = getResourceAsStream(resources);
 		if(inputstream == null)
 			throw new RuntimeException("could not find properties "+resources);
 		Properties properties = new Properties();
@@ -112,6 +112,28 @@ public abstract class Dao {
 			} catch (IOException e) {
 			}
 		}
+	}
+	
+	static InputStream getResourceAsStream(String resource) {
+		
+		ClassLoader systemClassLoader = null;
+		try {
+			systemClassLoader = ClassLoader.getSystemClassLoader();
+		} catch (SecurityException ignored) {}
+		
+		ClassLoader[] classLoader = new ClassLoader[] { Thread.currentThread().getContextClassLoader(), Dao.class.getClassLoader(), systemClassLoader };
+		for (ClassLoader cl : classLoader) {
+			if (null != cl) {
+				InputStream returnValue = cl.getResourceAsStream(resource);
+				if (null == returnValue) {
+					returnValue = cl.getResourceAsStream("/" + resource);
+				}
+				if (null != returnValue) {
+					return returnValue;
+				}
+			}
+		}
+		return null;
 	}
 	
 	static int isPostgreSql = -1;
