@@ -1,4 +1,9 @@
-![](resource/logo.png) 1.0
+![](document/zh-cn/resource/logo.png)
+
+----------
+
+> **编译好的性能测试程序下载：[rexdb-tester-1.0.2.zip](http://git.oschina.net/rexsoft/rexdb-tester/attach_files/download?i=65535&u=http%3A%2F%2Ffiles.git.oschina.net%2Fgroup1%2FM00%2F00%2F5F%2FPaAvDFfFpzyAIrvBAaFbTPT5aDA804.zip%3Ftoken%3Dfe0bdfdcb60d5b762b5aa18372bdc837%26ts%3D1472571192%26attname%3Drexdb-tester-1.0.2.zip) | [rexdb-tester-1.0.2.tar.gz](http://git.oschina.net/rexsoft/rexdb-tester/attach_files/download?i=65536&u=http%3A%2F%2Ffiles.git.oschina.net%2Fgroup1%2FM00%2F00%2F5F%2FPaAvDFfFp3SAfQgnAaFJP2Yg1mE2837.gz%3Ftoken%3D20ad52f9beff5627c1b82c8ebc88b38f%26ts%3D1472571192%26attname%3Drexdb-tester-1.0.2.tar.gz)**
+
 
 ----------
 
