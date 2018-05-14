@@ -2,7 +2,7 @@
 
 ----------
 
-> **编译好的性能测试程序下载：[rexdb-tester-1.0.3.zip](http://dl.rex-soft.org/rexdb/rexdb-tester-1.0.3.zip) | [rexdb-tester-1.0.3.tar.gz](http://dl.rex-soft.org/rexdb/rexdb-tester-1.0.3.tar.gz)**
+> **编译好的性能测试程序下载：[rexdb-tester-1.0.4.zip](http://dl.rex-soft.org/rexdb/rexdb-tester-1.0.4.zip) | [rexdb-tester-1.0.4.tar.gz](http://dl.rex-soft.org/rexdb/rexdb-tester-1.0.4.tar.gz)**
 
 
 ----------
